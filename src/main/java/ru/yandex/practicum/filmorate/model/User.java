@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import java.time.LocalDate;
 
 @Data
-@EqualsAndHashCode(of = { "email" })
+@EqualsAndHashCode(of = { "id" })
 public class User {
     private int id;
     @Email(message = "Введите электронную почту в корректном формете")
