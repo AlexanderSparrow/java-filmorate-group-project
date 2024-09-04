@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.Duration;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,7 +54,7 @@ class FilmControllerTest {
 
     @Test
     @DisplayName("Если длительность фильма меньше 0, то ошибка")
-    void ifDurationLessThan0Error(){
+    void ifDurationLessThan0Error() {
         film.setDuration((long) -1);
         assertThrows(ValidationExceptions.class, () -> filmController.create(film));
     }
