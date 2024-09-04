@@ -12,11 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Тестирование контроллера фильмов")
 class FilmControllerTest {
-    private final FilmController filmController = new FilmController();
+    private FilmController filmController;
     private Film film;
 
     @BeforeEach
     public void beforeEach() {
+        filmController = new FilmController();
         film = new Film();
         film.setName("name");
         film.setDescription("description");

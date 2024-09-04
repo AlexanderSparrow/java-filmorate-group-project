@@ -17,13 +17,13 @@ import java.util.Map;
 public class UserController {
 
     private final Map<Integer, User> users = new HashMap<>();
+    private int userId = 0;
 
     @GetMapping
     public Collection<User> findAll() {
         log.info("Получен запрос на получение всех пользователей");
         return users.values();
     }
-
 
     @PostMapping
     public User create(@Valid @RequestBody User newUser) {
@@ -36,7 +36,6 @@ public class UserController {
         users.put(newUser.getId(), newUser);
         return newUser;
     }
-
 
     @PutMapping
     public User update(@Valid @RequestBody User newUser) {
@@ -55,15 +54,10 @@ public class UserController {
     }
 
     private int getNextId() {
-        int currentMaxId = users.keySet()
-                .stream()
-                .mapToInt(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        return ++userId;
     }
 
-    public void userValidation(User newUser) {
+    private void userValidation(User newUser) {
         if (newUser.getEmail().isEmpty()) {
             log.error("Пользователь не указал email");
             throw new ValidationExceptions("Емэйл не указан");

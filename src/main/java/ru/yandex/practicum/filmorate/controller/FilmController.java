@@ -17,6 +17,7 @@ import java.util.Map;
 public class FilmController {
 
     private final Map<Integer, Film> films = new HashMap<>();
+    private int filmId = 0;
 
     @GetMapping
     public Collection<Film> findAll() {
@@ -33,7 +34,6 @@ public class FilmController {
         return newFilm;
     }
 
-
     @PutMapping
     public Film update(@Valid  @RequestBody Film newFilm) {
         log.info("Получен запрос на обновление фильма" + newFilm.getName());
@@ -46,13 +46,8 @@ public class FilmController {
         return film;
     }
 
-    private int getNextId() {
-        int currentMaxId = films.keySet()
-                .stream()
-                .mapToInt(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    private int getNextId() {        ;
+        return ++filmId;
     }
 
     private void filmValidation(Film newFilm) {

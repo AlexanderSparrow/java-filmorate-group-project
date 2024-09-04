@@ -12,11 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("Тестирование пользователя")
 class UserControllerTest {
-    private UserController userController = new UserController();
+    private UserController userController;
     private User user;
 
     @BeforeEach
-    void setUp() {
+    public void beforeEach() {
+        userController = new UserController();
         user = new User();
         user.setEmail("11@email");
         user.setLogin("login");
