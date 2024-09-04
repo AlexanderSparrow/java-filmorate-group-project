@@ -36,7 +36,7 @@ public class FilmController {
 
     @PutMapping
     public Film update(@Valid  @RequestBody Film newFilm) {
-        log.info("Получен запрос на обновление фильма"+ newFilm.getName());
+        log.info("Получен запрос на обновление фильма" + newFilm.getName());
         filmValidation(newFilm);
         Film film = films.get(newFilm.getId());
         film.setName(newFilm.getName());
