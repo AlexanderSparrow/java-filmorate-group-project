@@ -45,13 +45,13 @@ public class UserController {
 
     @PutMapping (value = "/{id}/friends/{friendId}")
     public User addFriend(@PathVariable long id, @PathVariable long friendId) {
-        log.info("Получен запрос на добавление друга {} к {}" ,id, friendId );
+        log.info("Получен запрос на добавление друга {} к {}", id, friendId);
         return userService.addFriend(id, friendId);
     }
 
     @DeleteMapping (value = "/{id}/friends/{friendId}")
     public User removeFriend(@PathVariable long id, @PathVariable long friendId) {
-        log.info("Получен запрос на удаление друга {} у {}" , friendId , id);
+        log.info("Получен запрос на удаление друга {} у {}", friendId, id);
         return userService.removeFriend(id, friendId);
     }
 
