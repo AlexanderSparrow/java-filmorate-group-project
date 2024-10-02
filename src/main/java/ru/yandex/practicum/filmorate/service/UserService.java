@@ -74,7 +74,7 @@ public class UserService {
             log.error("Пользователь не найден");
             throw new NotFoundExceptions("Пользователь " + id + " не найден");
         }
-        if(friend == null) {
+        if (friend == null) {
             log.error("Пользователь не найден");
             throw new NotFoundExceptions("Пользователь " + friendId + "не найден");
         }
