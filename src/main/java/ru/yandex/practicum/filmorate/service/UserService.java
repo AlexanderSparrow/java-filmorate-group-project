@@ -19,7 +19,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserStorage userStorage;;
+    private final UserStorage userStorage;
 
     public User findUser(long id) {
         return userStorage.findUser(id);
@@ -46,7 +46,7 @@ public class UserService {
             log.error("Пользователь не найден");
             throw new NotFoundExceptions("Пользователь " + id + " не найден");
         }
-        if(friend == null) {
+        if (friend == null) {
             log.error("Пользователь не найден");
             throw new NotFoundExceptions("Пользователь " + friendId + "не найден");
         }
@@ -70,7 +70,7 @@ public class UserService {
     public User removeFriend(long id, long friendId) {
         User user = findUser(id);
         User friend = findUser(friendId);
-        if (user == null ) {
+        if (user == null) {
             log.error("Пользователь не найден");
             throw new NotFoundExceptions("Пользователь " + id + " не найден");
         }
@@ -113,11 +113,11 @@ public class UserService {
         log.info("Получен запрос на получение общих друзей пользователя" + id + " " + otherId);
         User user = findUser(id);
         User other = findUser(otherId);
-        if (user == null ) {
+        if (user == null) {
             log.error("Пользователь не найден");
             throw new NotFoundExceptions("Пользователь " + id + " не найден");
         }
-        if(other == null) {
+        if (other == null) {
             log.error("Пользователь не найден");
             throw new NotFoundExceptions("Пользователь " + otherId + "не найден");
         }
@@ -133,7 +133,7 @@ public class UserService {
     }
 
     private void userValidation(User newUser) {
-        if (newUser== null) {
+        if (newUser == null) {
             log.error("Пользователь не указан");
             throw new ValidationExceptions("Пользователь не указан");
         }
