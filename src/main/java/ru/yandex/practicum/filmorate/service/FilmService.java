@@ -41,10 +41,10 @@ public class FilmService {
     }
 
     public Film setLikeToMovie(Long id, Long userId) {
-        if (userService.findUser(userId) !=null) {
+        if (userService.findUser(userId) != null) {
             if (findFilm(id) != null) {
                 Film film = findFilm(id);
-                if (film.getLikes() !=null) {
+                if (film.getLikes() != null) {
                     if (!film.getLikes().contains(userId)) {
                         film.getLikes().add(userId);
                     }
@@ -58,14 +58,14 @@ public class FilmService {
                 log.error("Пользователь попытался добавить лайк к фильму с несуществующим id");
                 throw new NotFoundExceptions("Необходимо указать корректный id фильма");
             }
-        }else {
+        } else {
             log.error("Пользователь попытался добавить лайк к фильму, но не авторизован");
             throw new NotFoundExceptions("Необходимо авторизоваться");
         }
     }
 
     public Film removeLikeFromMovie(Long id, Long userId) {
-        if (userService.findUser(userId) !=null) {
+        if (userService.findUser(userId) != null) {
             if (findFilm(id) != null) {
                 Film film = findFilm(id);
                 if (film.getLikes().contains(userId)) {
