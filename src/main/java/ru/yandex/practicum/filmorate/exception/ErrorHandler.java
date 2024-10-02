@@ -15,7 +15,7 @@ public class ErrorHandler {
 
     @ExceptionHandler({ValidationExceptions.class, MethodArgumentNotValidException.class,})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse notValidArgsException (ValidationExceptions e) {
+    public ErrorResponse notValidArgsException(ValidationExceptions e) {
         log.info("Ошибка валидации: {}", e.getMessage());
         return new ErrorResponse(e.getMessage(), e.getMessage());
     }
@@ -23,14 +23,14 @@ public class ErrorHandler {
 
     @ExceptionHandler({NotFoundExceptions.class, HttpMessageNotReadableException.class,})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleObjectNotFoundExc (NotFoundExceptions e) {
+    public ErrorResponse handleObjectNotFoundExc(NotFoundExceptions e) {
         log.info("Элемент не найден {}", e.getMessage());
         return new ErrorResponse(e.getMessage(), e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleOtherExc (Throwable e) {
+    public ErrorResponse handleOtherExc(Throwable e) {
         log.info("Ошибка INTERNAL_SERVER_ERROR: ", e);
         return new ErrorResponse(e.getMessage(), e.getMessage());
     }
