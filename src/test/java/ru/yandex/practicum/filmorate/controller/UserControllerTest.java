@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
@@ -14,14 +15,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("Тестирование пользователя")
 class UserControllerTest {
-    private UserController userController;
-    private FilmService filmService;
-    private UserService userService;
+    private UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
     private User user;
 
     @BeforeEach
     public void beforeEach() {
-        userController = new UserController(filmService, userService);
         user = new User();
         user.setEmail("11@email");
         user.setLogin("login");

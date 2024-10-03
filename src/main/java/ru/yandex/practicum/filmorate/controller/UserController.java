@@ -8,17 +8,19 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.util.List;
 
 @Slf4j
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
-    private final FilmService filmService;
     private final UserService userService;
 
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
     @GetMapping(value = "/{id}")
     public User findUser(@PathVariable long id) {
         log.info("Поиск пользователя по id {}", id);

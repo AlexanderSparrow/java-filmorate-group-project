@@ -11,11 +11,14 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/films")
 public class FilmController {
 
     private final FilmService filmService;
+
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @GetMapping(value = "/{id}")
     public Film findFilm(@PathVariable long id) {
