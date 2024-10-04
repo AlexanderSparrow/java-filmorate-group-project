@@ -81,9 +81,9 @@ public class UserService {
             log.error("Пользователь {} не найден", user.getId());
             throw new NotFoundExceptions("Пользователь c id " + id + " не найден");
         }
-         return user.getFriends().stream().
-                 map(userStorage::findUser).
-                 collect(Collectors.toList());
+         return user.getFriends().stream()
+                 .map(userStorage::findUser)
+                 .collect(Collectors.toList());
     }
 
     public List<User> getCommonFriends(Long id, Long otherId) {
@@ -98,10 +98,10 @@ public class UserService {
             log.error("Пользователь не найден");
             throw new NotFoundExceptions("Пользователь " + otherId + "не найден");
         }
-        return user.getFriends().stream().
-                filter(findUser -> other.getFriends().contains(findUser)).
-                map(userStorage::findUser).
-                collect(Collectors.toList());
+        return user.getFriends().stream()
+                .filter(findUser -> other.getFriends().contains(findUser))
+                .map(userStorage::findUser)
+                .collect(Collectors.toList());
     }
 
     private void userValidation(User newUser) {
