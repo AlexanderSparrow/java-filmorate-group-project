@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundExceptions;
@@ -16,7 +15,6 @@ import java.util.Map;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
 
-    @Getter
     private final Map<Long, Film> films = new HashMap<>();
     private Long filmId = 0L;
 
@@ -31,7 +29,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         } else {
             throw new NotFoundExceptions("Фильм не найден");
         }
-
     }
 
     @Override

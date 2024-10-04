@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundExceptions;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
@@ -9,21 +9,15 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class UserService {
 
     private final UserStorage userStorage;
-
-    @Autowired
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
 
     public User findUser(long id) {
         return userStorage.findUser(id);
@@ -54,20 +48,8 @@ public class UserService {
             log.error("Пользователь не найден");
             throw new NotFoundExceptions("Пользователь " + friendId + "не найден");
         }
-        if (user.getFriends() == null) {
-            Set<Long> friendList = new HashSet<>();
-            friendList.add(friendId);
-            user.setFriends(friendList);
-        } else {
-            user.getFriends().add(friendId);
-        }
-        if (friend.getFriends() == null) {
-            Set<Long> friendsList = new HashSet<>();
-            friendsList.add(id);
-            friend.setFriends(friendsList);
-        } else {
-            user.getFriends().add(friendId);
-        }
+        user.getFriends().add(friendId);
+        friend.getFriends().add(id);
         return user;
     }
 
@@ -99,18 +81,9 @@ public class UserService {
             log.error("Пользователь {} не найден", user.getId());
             throw new NotFoundExceptions("Пользователь c id " + id + " не найден");
         }
-        List<User> friends = new ArrayList<>();
-        if (user.getFriends() != null) {
-            for (long idUser : findUser(id).getFriends()) {
-                if (findUser(idUser) == null) {
-                    log.error("Пользователь {} не найден", user.getId());
-                    throw new NotFoundExceptions("Друг с id" + id + " не найден");
-                } else {
-                    friends.add(findUser(idUser));
-                }
-            }
-        }
-        return friends;
+         return user.getFriends().stream().
+                 map(userStorage::findUser).
+                 collect(Collectors.toList());
     }
 
     public List<User> getCommonFriends(Long id, Long otherId) {
@@ -125,15 +98,10 @@ public class UserService {
             log.error("Пользователь не найден");
             throw new NotFoundExceptions("Пользователь " + otherId + "не найден");
         }
-        List<User> friends = new ArrayList<>();
-        for (long friendOfFriends: findUser(otherId).getFriends()) {
-            if (findUser(friendOfFriends) != null) {
-                if (user.getFriends().contains(friendOfFriends)) {
-                    friends.add(findUser(friendOfFriends));
-                }
-            }
-        }
-        return friends;
+        return user.getFriends().stream().
+                filter(findUser -> other.getFriends().contains(findUser)).
+                map(userStorage::findUser).
+                collect(Collectors.toList());
     }
 
     private void userValidation(User newUser) {
@@ -158,5 +126,4 @@ public class UserService {
             throw new ValidationExceptions("Дата рождения не может быть в будущем");
         }
     }
-
 }

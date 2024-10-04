@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -25,5 +26,5 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "Длительность фильма не может быть отрицательной")
     private Long duration;
-    Set<Long> likes;
+    Set<Long> likes = new HashSet<>();
 }

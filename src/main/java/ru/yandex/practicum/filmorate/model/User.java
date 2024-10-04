@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -20,6 +21,5 @@ public class User {
     private String name;
     @Past(message = "Дата рождения не может быть позже текущего дня")
     private LocalDate birthday;
-    Set<Long> friends;
-    Set<Long> filmIdLiked;
+    Set<Long> friends = new HashSet<>();
 }

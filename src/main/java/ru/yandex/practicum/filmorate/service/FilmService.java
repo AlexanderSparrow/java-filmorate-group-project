@@ -1,31 +1,26 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundExceptions;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
+
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class FilmService {
 
     private final FilmStorage filmStorage;
-    private final UserService userService;
-
-    @Autowired
-    public FilmService(FilmStorage filmStorage, UserService userService) {
-        this.filmStorage = filmStorage;
-        this.userService = userService;
-    }
+    private final UserStorage userStorage;
 
     public Film findFilm(Long id) {
         return filmStorage.findFilm(id);
@@ -46,19 +41,13 @@ public class FilmService {
     }
 
     public Film setLikeToMovie(Long id, Long userId) {
-        if (userService.findUser(userId) != null) {
+        if (userStorage.findUser(userId) != null) {
             if (findFilm(id) != null) {
-                Film film = findFilm(id);
-                if (film.getLikes() != null) {
-                    if (!film.getLikes().contains(userId)) {
-                        film.getLikes().add(userId);
-                    }
-                } else {
-                    Set<Long> likeList = new HashSet<>();
-                    likeList.add(userId);
-                    film.setLikes(likeList);
+                Film films = findFilm(id);
+                if (!films.getLikes().contains(userId)) {
+                        films.getLikes().add(userId);
                 }
-                return film;
+                return films;
             } else {
                 log.error("Пользователь попытался добавить лайк к фильму с несуществующим id");
                 throw new NotFoundExceptions("Необходимо указать корректный id фильма");
@@ -70,7 +59,7 @@ public class FilmService {
     }
 
     public Film removeLikeFromMovie(Long id, Long userId) {
-        if (userService.findUser(userId) != null) {
+        if (userStorage.findUser(userId) != null) {
             if (findFilm(id) != null) {
                 Film film = findFilm(id);
                 if (film.getLikes().contains(userId)) {
