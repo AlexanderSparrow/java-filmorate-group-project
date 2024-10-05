@@ -21,5 +21,5 @@ public class User {
     private String name;
     @Past(message = "Дата рождения не может быть позже текущего дня")
     private LocalDate birthday;
-    Set<Long> friends = new HashSet<>();
+    private Set<Long> friends = new HashSet<>();
 }

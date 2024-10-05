@@ -41,39 +41,17 @@ public class FilmService {
     }
 
     public Film setLikeToMovie(Long id, Long userId) {
-        if (userStorage.findUser(userId) != null) {
-            if (findFilm(id) != null) {
-                Film films = findFilm(id);
-                if (!films.getLikes().contains(userId)) {
-                        films.getLikes().add(userId);
-                }
-                return films;
-            } else {
-                log.error("Пользователь попытался добавить лайк к фильму с несуществующим id");
-                throw new NotFoundExceptions("Необходимо указать корректный id фильма");
-            }
-        } else {
-            log.error("Пользователь попытался добавить лайк к фильму, но не авторизован");
-            throw new NotFoundExceptions("Необходимо авторизоваться");
-        }
+        userStorage.findUser(userId);
+        Film films = findFilm(id);
+        films.getLikes().add(userId);
+        return films;
     }
 
     public Film removeLikeFromMovie(Long id, Long userId) {
-        if (userStorage.findUser(userId) != null) {
-            if (findFilm(id) != null) {
-                Film film = findFilm(id);
-                if (film.getLikes().contains(userId)) {
-                    film.getLikes().remove(userId);
-                }
-                return film;
-            } else {
-                log.error("Пользователь попытался удалить лайк с фильма с несуществующим id");
-                throw new NotFoundExceptions("Необходимо указать корректный id фильма");
-            }
-        } else {
-            log.error("Пользователь попытался удалить лайк с фильма, но не авторизован");
-            throw new NotFoundExceptions("Необходимо авторизоваться");
-        }
+        userStorage.findUser(userId);
+        Film film = findFilm(id);
+        film.getLikes().remove(userId);
+        return film;
     }
 
     public List<Film> getPopularFilms(int count) {
