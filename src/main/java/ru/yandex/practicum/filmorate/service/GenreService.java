@@ -16,13 +16,13 @@ public class GenreService {
 
     public Genre getGenre(long id) {
         return genreStorage.getGenre(id);
-    };
+    }
 
     public List<Genre> getAllGenres() {
         return genreStorage.getAllGenres();
-    };
+    }
 
     public List<Genre> getGenresForFilm(long filmId) {
         return genreStorage.getGenresForFilm(filmId);
-    };
+    }
 }
