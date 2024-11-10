@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -11,17 +12,15 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
 
     private final FilmService filmService;
 
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
-
     @GetMapping(value = "/{id}")
     public Film findFilm(@PathVariable long id) {
-        log.info("Поиск фильма по id {}", id);
+        log.info("Получен запрос на поиск фильма по id {}", id);
+        log.info(filmService.findFilm(id).toString());
         return filmService.findFilm(id);
     }
 
@@ -45,13 +44,13 @@ public class FilmController {
 
     @PutMapping (value = "{id}/like/{userId}")
     public Film setLikeToMovie(@PathVariable Long id, @PathVariable Long userId) {
-        log.info("Пользователь с id " + userId + " поставил лайк фильму с id " + id);
+        log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, id);
         return filmService.setLikeToMovie(id, userId);
     }
 
     @DeleteMapping (value = "{id}/like/{userId}")
-    public Film removeLikeFromMovie(@PathVariable Long id, @PathVariable Long userId) {
-        log.info("Пользователь с id " + userId + " удалил лайк фильму с id " + id);
+    public Film removeLikeFromMovie(@PathVariable long id, @PathVariable Long userId) {
+        log.info("Пользователь с id {} удалил лайк фильму с id {}", userId, id);
         return filmService.removeLikeFromMovie(id, userId);
     }
 
@@ -61,4 +60,8 @@ public class FilmController {
         return filmService.getPopularFilms(count);
     }
 
+    @GetMapping(value = "/{id}/like")
+    public List <Long> getFilmLikes(@PathVariable long id) {
+        return filmService.getFilmLikes(id);
+    }
 }

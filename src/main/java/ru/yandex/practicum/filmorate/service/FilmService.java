@@ -5,13 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
-
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Like;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,6 +20,9 @@ import java.util.stream.Collectors;
 public class FilmService {
 
     private final FilmStorage filmStorage;
+    private final MpaStorage mpaStorage;
+    private final GenreStorage genreStorage;
+    private final LikeStorage likeStorage;
     private final UserStorage userStorage;
 
     public Film findFilm(Long id) {
@@ -35,30 +39,40 @@ public class FilmService {
     }
 
     public Film updateFilm(Film newFilm) {
+        final Film film = filmStorage.findFilm(newFilm.getId());
         filmValidation(newFilm);
-        return filmStorage.updateFilm(newFilm);
-    }
-
-    public Film setLikeToMovie(Long id, Long userId) {
-        userStorage.findUser(userId);
-        Film films = findFilm(id);
-        films.getLikes().add(userId);
-        return films;
-    }
-
-    public Film removeLikeFromMovie(Long id, Long userId) {
-        userStorage.findUser(userId);
-        Film film = findFilm(id);
-        film.getLikes().remove(userId);
+        final Mpa mpa = mpaStorage.findMpa(newFilm.getMpa().getId());
+        final LinkedHashSet<Genre> genres = new LinkedHashSet<>(genreStorage.getGenresForFilm(newFilm.getId()));
+        film.setName(newFilm.getName());
+        film.setDescription(newFilm.getDescription());
+        film.setReleaseDate(newFilm.getReleaseDate());
+        film.setDuration(newFilm.getDuration());
+        film.setMpa(mpa);
+        film.setGenres(genres);
+        filmStorage.updateFilm(film);
         return film;
     }
 
+    public Film setLikeToMovie(long filmId, long userId) {
+        filmStorage.findFilm(filmId);
+        userStorage.findUser(userId);
+        likeStorage.setLikeToMovie(filmId, userId);
+        return filmStorage.findFilm(filmId);
+    }
+
+    public Film removeLikeFromMovie(long filmId, long userId) {
+        filmStorage.findFilm(filmId);
+        userStorage.findUser(userId);
+        likeStorage.removeLikeFromMovie(filmId, userId);
+        return filmStorage.findFilm(filmId);
+    }
+
     public List<Film> getPopularFilms(int count) {
-        return findAllFilms().stream()
-                .filter(movie -> movie.getLikes() != null)
-                .sorted((o1, o2) -> Integer.compare(o2.getLikes().size(), o1.getLikes().size()))
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmStorage.getPopularFilms(count);
+    }
+
+    public List<Long> getFilmLikes(long filmId) {
+        return likeStorage.getFilmLikes(filmId).stream().map(Like::getUserId).toList();
     }
 
     private void filmValidation(Film newFilm) {
@@ -81,6 +95,20 @@ public class FilmService {
         if (newFilm.getDuration() <= 0) {
             log.error("Пользователь попытался создать новый фильм с длительностью меньше 1 минуты");
             throw new ValidationExceptions("Длительность не может быть меньше 1 минуты");
+        }
+        if (newFilm.getMpa() == null) {
+            log.error("Пользователь попытался создать новый фильм без рейтинга");
+            throw new ValidationExceptions("Необходимо указать рейтинг");
+        }
+        if (!mpaStorage.findAllMpas().contains(newFilm.getMpa())) {
+            log.error("Пользователь попытался создать новый фильм с некорректным рейтингом");
+            throw new ValidationExceptions("Некорректный рейтинг");
+        }
+        for (Genre genre : newFilm.getGenres()) {
+            if (!genreStorage.getAllGenres().contains(genre)) {
+                log.error("Пользователь попытался создать новый фильм с некорректным жанром");
+                throw new ValidationExceptions("Некорректный жанр");
+            }
         }
     }
 }

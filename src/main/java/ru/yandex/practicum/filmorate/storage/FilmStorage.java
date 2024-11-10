@@ -8,11 +8,13 @@ import java.util.List;
 @Service
 public interface FilmStorage {
 
+    Film findFilm(long id);
+
+    List<Film> findAllFilms();
+
     Film createFilm(Film film);
 
     Film updateFilm(Film film);
 
-    Film findFilm(long id);
-
-    List<Film> findAllFilms();
+    List<Film> getPopularFilms(int count);
 }

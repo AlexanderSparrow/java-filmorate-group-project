@@ -8,12 +8,11 @@ import java.util.List;
 @Service
 public interface UserStorage {
 
-    User findUser(Long id);
+    User findUser(long id);
 
     List<User> findAllUsers();
 
     User createUser(User newUser);
 
     User updateUser(User newUser);
-
 }
