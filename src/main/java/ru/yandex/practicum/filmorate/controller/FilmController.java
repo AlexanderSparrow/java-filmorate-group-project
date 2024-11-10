@@ -61,7 +61,7 @@ public class FilmController {
     }
 
     @GetMapping(value = "/{id}/like")
-    public List <Long> getFilmLikes(@PathVariable long id) {
+    public List<Long> getFilmLikes(@PathVariable long id) {
         return filmService.getFilmLikes(id);
     }
 }
