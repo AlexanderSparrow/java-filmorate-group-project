@@ -94,7 +94,7 @@ class UserServiceTest {
     void updateUser() {
         user.setName("Обновленное имя");
         firstUser = userService.updateUser(user);
-        assertThat(firstUser).hasFieldOrPropertyWithValue("id", 1l);
+        assertThat(firstUser).hasFieldOrPropertyWithValue("id", 1L);
         assertThat(firstUser).hasFieldOrPropertyWithValue("name", user.getName());
         assertThat(firstUser).hasFieldOrPropertyWithValue("login", user.getLogin());
         assertThat(firstUser).hasFieldOrPropertyWithValue("email", user.getEmail());
