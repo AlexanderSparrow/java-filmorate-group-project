@@ -36,7 +36,7 @@ class GenreServiceTest {
         film.setDuration(100L);
         film.setReleaseDate(LocalDate.of(2020, 1, 1));
         film.setMpa(mpaService.findMpa(1L));
-        LinkedHashSet<Genre> genres= new LinkedHashSet<>();
+        LinkedHashSet<Genre> genres = new LinkedHashSet<>();
         genres.add(genreService.getGenre(2));
         genres.add(genreService.getGenre(3));
         film.setGenres(genres);
