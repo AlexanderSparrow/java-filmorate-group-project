@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GenresController {
 
-    GenreService genreService;
+    private final GenreService genreService;
 
     @GetMapping(value = "/{id}")
     public Genre getGenre(@PathVariable long id) {
