@@ -32,7 +32,7 @@ class MpaServiceTest {
     @Test
     @DisplayName("Поиск всех рейтиннгов")
     void findAllMpas() {
-        List <Mpa> mpas = mpaService.findAllMpas();
+        List<Mpa> mpas = mpaService.findAllMpas();
         assertThat(mpas.size()).isEqualTo(5);
     }
 }
