@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @Component
-public class UserMapper implements RowMapper<User>{
+public class UserMapper implements RowMapper<User> {
 
     private final FriendshipStorage friendshipStorage;
 

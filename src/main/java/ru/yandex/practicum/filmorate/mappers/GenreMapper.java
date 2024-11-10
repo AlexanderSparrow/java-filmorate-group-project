@@ -13,7 +13,7 @@ import java.sql.SQLException;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 @Component
-public class GenreMapper implements RowMapper<Genre>{
+public class GenreMapper implements RowMapper<Genre> {
 
     @Override
     public Genre mapRow(ResultSet rs, int rowNum) throws SQLException {

@@ -13,7 +13,7 @@ import java.sql.SQLException;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 @Component
-public class FriendshipMapper implements RowMapper<Friendship>{
+public class FriendshipMapper implements RowMapper<Friendship> {
 
     @Override
     public Friendship mapRow(ResultSet rs, int rowNum) throws SQLException {

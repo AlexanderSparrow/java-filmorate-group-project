@@ -13,7 +13,7 @@ import java.sql.SQLException;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 @Component
-public class LikeMapper implements RowMapper<Like>{
+public class LikeMapper implements RowMapper<Like> {
 
     @Override
     public Like mapRow(ResultSet rs, int rowNum) throws SQLException {
