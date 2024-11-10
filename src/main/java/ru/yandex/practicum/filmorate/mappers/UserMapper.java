@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.mappers;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,7 +10,6 @@ import ru.yandex.practicum.filmorate.storage.FriendshipStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
