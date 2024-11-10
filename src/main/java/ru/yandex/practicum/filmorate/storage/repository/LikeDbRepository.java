@@ -31,7 +31,7 @@ public class LikeDbRepository extends BaseRepository<Like> implements LikeStorag
     }
 
     @Override
-    public void removeLikeFromMovie(long userId , long movieId) {
+    public void removeLikeFromMovie(long userId, long movieId) {
         delete(REMOVE_LIKE_FROM_MOVIE, movieId, userId);
     }
 }
