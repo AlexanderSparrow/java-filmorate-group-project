@@ -35,8 +35,8 @@ public class FilmMapper implements RowMapper<Film> {
         film.setDescription(rs.getString("FILM_DESCRIPTION"));
         film.setReleaseDate(rs.getDate("FILM_RELEASE_DATE").toLocalDate());
         film.setDuration(rs.getLong("FILM_DURATION"));
-        Mpa Mpa = mpaStorage.findMpa(rs.getLong("FILM_MPA"));
-        film.setMpa(Mpa);
+        Mpa mpa = mpaStorage.findMpa(rs.getLong("FILM_MPA"));
+        film.setMpa(mpa);
         LinkedHashSet<Genre> genres = new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId()));
         Set<Long> likes = likeStorage.getFilmLikes(film.getId()).stream().map(Like::getUserId).collect(Collectors.toSet());
         film.setGenres(genres);
