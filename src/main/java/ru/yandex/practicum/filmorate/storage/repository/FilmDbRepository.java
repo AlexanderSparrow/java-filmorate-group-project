@@ -16,7 +16,13 @@ import java.util.Optional;
 @Repository
 public class FilmDbRepository extends BaseRepository<Film> implements FilmStorage {
 
-    private static final String FIND_FILM_BY_ID = "SELECT * FROM films WHERE film_id = ?";
+    private static final String FIND_FILM_BY_ID =
+            "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
+            "f.film_release_date AS RELEASE_DATE, f.film_duration AS DURATION, f.film_mpa AS MPA_ID, " +
+            "MPA.NAME AS MPA_NAME " +
+            "FROM films AS f " +
+            "JOIN MPA ON f.FILM_MPA = MPA.ID" +
+            "WHERE f.film_id = ?";            ;
     private static final String FIND_ALL_FILMS = "SELECT * FROM films";
     private static final String CREATE_FILM = "INSERT INTO films" +
             "(film_name, film_description, film_release_date, film_duration, film_mpa) " +
@@ -94,5 +100,4 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
     public List<Film> getPopularFilms(int count) {
         return findMany(FIND_POPULAR_FILMS, count);
     }
-
 }

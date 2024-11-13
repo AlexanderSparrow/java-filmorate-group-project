@@ -14,10 +14,10 @@ import java.util.Optional;
 @Component
 @Repository
 public class GenreDbRepository extends BaseRepository<Genre> implements GenreStorage {
-    private static final String FIND_GENRE = "SELECT * FROM GENRES WHERE GENRE_id = ?";
-    private static final String FIND_ALL_GENRES = "SELECT * FROM GENRES ORDER BY GENRE_ID";
-    private static final String FIND_GENRES_FOR_FILM = "SELECT g.GENRE_id, g.GENRE_name FROM FILM_GENRES AS FG \n" +
-            "JOIN GENRES AS g ON g.GENRE_id = fg.GENRE_id  WHERE fg.film_id = ?";
+    private static final String FIND_GENRE = "SELECT * FROM GENRES WHERE id = ?";
+    private static final String FIND_ALL_GENRES = "SELECT * FROM GENRES ORDER BY ID";
+    private static final String FIND_GENRES_FOR_FILM = "SELECT g.id, g.name FROM FILM_GENRES AS FG \n" +
+            "JOIN GENRES AS g ON g.id = fg.GENRE_id WHERE fg.film_id = ?";
 
     public GenreDbRepository(JdbcTemplate jdbc, RowMapper<Genre> mapper) {
         super(jdbc, mapper);

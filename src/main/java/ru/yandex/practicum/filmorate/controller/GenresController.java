@@ -30,10 +30,4 @@ public class GenresController {
         log.info("Запрос на получение всех жанров");
         return genreService.getAllGenres();
     }
-
-    @GetMapping(value = "/film/{id}")
-    public List<Genre> getGenresForFilm(long filmId) {
-        log.info("Запрос на получение жанров для фильма с id {}", filmId);
-        return genreService.getGenresForFilm(filmId);
-    }
 }

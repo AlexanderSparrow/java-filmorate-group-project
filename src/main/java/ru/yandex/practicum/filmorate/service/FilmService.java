@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Like;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.*;
 
@@ -26,11 +25,15 @@ public class FilmService {
     private final UserStorage userStorage;
 
     public Film findFilm(Long id) {
-        return filmStorage.findFilm(id);
+        Film film = filmStorage.findFilm(id);
+        film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(id)));
+        return film;
     }
 
     public List<Film> findAllFilms() {
-        return filmStorage.findAllFilms();
+        List<Film> films = filmStorage.findAllFilms();
+        films.forEach(film -> film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId()))));
+        return films;
     }
 
     public Film createFilm(Film newFilm) {
@@ -71,8 +74,8 @@ public class FilmService {
         return filmStorage.getPopularFilms(count);
     }
 
-    public List<Long> getFilmLikes(long filmId) {
-        return likeStorage.getFilmLikes(filmId).stream().map(Like::getUserId).toList();
+    public List<Genre> getGenresForFilm(long filmId) {
+        return genreStorage.getGenresForFilm(filmId);
     }
 
     private void filmValidation(Film newFilm) {
@@ -100,15 +103,7 @@ public class FilmService {
             log.error("Пользователь попытался создать новый фильм без рейтинга");
             throw new ValidationExceptions("Необходимо указать рейтинг");
         }
-        if (!mpaStorage.findAllMpas().contains(newFilm.getMpa())) {
-            log.error("Пользователь попытался создать новый фильм с некорректным рейтингом");
-            throw new ValidationExceptions("Некорректный рейтинг");
-        }
-        for (Genre genre : newFilm.getGenres()) {
-            if (!genreStorage.getAllGenres().contains(genre)) {
-                log.error("Пользователь попытался создать новый фильм с некорректным жанром");
-                throw new ValidationExceptions("Некорректный жанр");
-            }
-        }
+
+
     }
 }

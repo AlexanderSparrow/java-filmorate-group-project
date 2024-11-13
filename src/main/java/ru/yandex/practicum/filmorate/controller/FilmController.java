@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.List;
@@ -20,7 +21,6 @@ public class FilmController {
     @GetMapping(value = "/{id}")
     public Film findFilm(@PathVariable long id) {
         log.info("Получен запрос на поиск фильма по id {}", id);
-        log.info(filmService.findFilm(id).toString());
         return filmService.findFilm(id);
     }
 
@@ -60,8 +60,9 @@ public class FilmController {
         return filmService.getPopularFilms(count);
     }
 
-    @GetMapping(value = "/{id}/like")
-    public List<Long> getFilmLikes(@PathVariable long id) {
-        return filmService.getFilmLikes(id);
+    @GetMapping(value = "/film/{id}")
+    public List<Genre> getGenresForFilm(long filmId) {
+        log.info("Запрос на получение жанров для фильма с id {}", filmId);
+        return filmService.getGenresForFilm(filmId);
     }
 }

@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 public class UserDbRepository extends BaseRepository<User> implements UserStorage {
 
-    private static final String FIND_ALL_QUERY = "SELECT * FROM users";
+    private static final String FIND_ALL_QUERY = "SELECT * FROM USERS";
     private static final String FIND_USER_BY_ID = "SELECT * FROM users WHERE user_id = ?";
     private static final String INSERT_USER = "INSERT INTO users(user_email, user_login, user_name, user_birthday) VALUES(?, ?, ?, ?)";
     private static final String UPDATE_USER = "UPDATE users SET user_email = ?, user_login = ?, user_name = ?, user_birthday = ? WHERE user_id = ?";

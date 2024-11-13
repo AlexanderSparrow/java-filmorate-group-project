@@ -45,10 +45,6 @@ public class UserService {
             log.error("Нельзя добавить себя в друзья");
             throw new ValidationExceptions("Нельзя добавить себя в друзья");
         }
-        if (getFriends(id).contains(userStorage.findUser(friendId))) {
-            log.error("Пользователь уже добавлен в друзья");
-            throw new ValidationExceptions("Пользователь уже добавлен в друзья");
-        }
         friendshipStorage.addFriend(id, friendId);
         return userStorage.findUser(id);
     }
@@ -66,17 +62,13 @@ public class UserService {
 
     public List<User> getFriends(long id) {
         userStorage.findUser(id);
-        return friendshipStorage.getFriends(id).stream()
-                .map(friendship -> userStorage.findUser(friendship.getFriendId()))
-                .toList();
+        return friendshipStorage.getFriends(id);
     }
 
     public List<User> getCommonFriends(long id, long friendId) {
         userStorage.findUser(id);
         userStorage.findUser(friendId);
-        return friendshipStorage.getCommonFriends(id, friendId).stream()
-                .map(friendship -> userStorage.findUser(friendship.getFriendId()))
-                .toList();
+        return friendshipStorage.getCommonFriends(id, friendId);
     }
 
     private void userValidation(User newUser) {

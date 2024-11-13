@@ -1,18 +1,14 @@
+merge into MPA (id, name)
+values (1, 'G'),
+(2, 'PG'),
+(3, 'PG-13'),
+(4, 'R'),
+(5, 'NC-17');
 
-MERGE INTO MPA
-    USING (VALUES ('G') , ('PG'), ('PG-13'), ('R'), ('NC-17')) AS s (source)
-    ON MPA.MPA_NAME = s.source
-WHEN MATCHED THEN
-    UPDATE
-        SET MPA.MPA_NAME = source
-WHEN NOT MATCHED THEN
-    INSERT(MPA_NAME) VALUES(source);
-
-MERGE INTO GENRES
-    USING (VALUES ('Комедия') , ('Драма'), ('Мультфильм'), ('Триллер'), ('Документальный'), ('Боевик')) AS s (source)
-    ON GENRES.GENRE_NAME = s.source
-WHEN MATCHED THEN
-    UPDATE
-        SET GENRES.GENRE_NAME = source
-WHEN NOT MATCHED THEN
-    INSERT(GENRE_NAME) VALUES(source);
+MERGE INTO GENRES (id , name)
+VALUES (1,'Комедия'),
+(2, 'Драма'),
+(3, 'Мультфильм'),
+(4, 'Триллер'),
+(5, 'Документальный'),
+(6, 'Боевик');

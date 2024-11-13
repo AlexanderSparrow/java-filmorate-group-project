@@ -30,6 +30,12 @@ public class UserController {
         return userService.findAllUsers();
     }
 
+    @GetMapping (value = "/{id}/friends")
+    public List<User> getFriends(@PathVariable long id) {
+        log.info("Получен запрос на получение друзей пользователя " + id);
+        return userService.getFriends(id);
+    }
+
     @PostMapping
     public User createUser(@Valid @RequestBody User newUser) {
         log.info("Получен запрос на создание пользователя " + newUser.getLogin());
@@ -52,12 +58,6 @@ public class UserController {
     public User removeFriend(@PathVariable long id, @PathVariable long friendId) {
         log.info("Получен запрос на удаление друга {} у {}", friendId, id);
         return userService.removeFriend(id, friendId);
-    }
-
-    @GetMapping (value = "/{id}/friends")
-    public List<User> getFriends(@PathVariable long id) {
-        log.info("Получен запрос на получение друзей пользователя " + id);
-        return userService.getFriends(id);
     }
 
     @GetMapping ("/{id}/friends/common/{friendId}")

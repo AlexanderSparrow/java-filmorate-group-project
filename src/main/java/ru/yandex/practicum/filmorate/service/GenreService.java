@@ -21,8 +21,4 @@ public class GenreService {
     public List<Genre> getAllGenres() {
         return genreStorage.getAllGenres();
     }
-
-    public List<Genre> getGenresForFilm(long filmId) {
-        return genreStorage.getGenresForFilm(filmId);
-    }
 }

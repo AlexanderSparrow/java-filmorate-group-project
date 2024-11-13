@@ -58,7 +58,7 @@ class GenreServiceTest {
 
     @Test
     void getGenresForFilm() {
-        List<Genre> genres = genreService.getGenresForFilm(1);
+        List<Genre> genres = filmService.getGenresForFilm(1);
         assertThat(genres.size()).isEqualTo(2);
     }
 }
