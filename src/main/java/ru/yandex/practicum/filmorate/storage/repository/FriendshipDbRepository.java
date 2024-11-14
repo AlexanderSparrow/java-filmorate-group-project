@@ -17,7 +17,7 @@ public class FriendshipDbRepository extends BaseRepository<User> implements Frie
     private static final String DELETE_FRIEND = "DELETE FROM FRIENDSHIP WHERE FRIENDSHIP_USER_ID = ? \n" +
             "AND FRIENDSHIP_FRIEND_ID = ?";
     private static final String FIND_COMMON_FRIENDS = "select * from USERS u, FRIENDSHIP f, FRIENDSHIP o where u.USER_ID = f.FRIENDSHIP_FRIEND_ID AND u.USER_ID = o.FRIENDSHIP_FRIEND_ID AND f.FRIENDSHIP_USER_ID = ? AND o.FRIENDSHIP_USER_ID = ?";
-    private static final String FIND_FRIENDS = "SELECT * FROM USERS u, FRIENDSHIP f WHERE u.USER_ID = f.FRIENDSHIP_USER_ID AND f.FRIENDSHIP_USER_ID = ?;";
+    private static final String FIND_FRIENDS = "SELECT * FROM USERS u, FRIENDSHIP f WHERE u.USER_ID = f.FRIENDSHIP_FRIEND_ID AND f.FRIENDSHIP_USER_ID = ?;";
 
     public FriendshipDbRepository(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);
