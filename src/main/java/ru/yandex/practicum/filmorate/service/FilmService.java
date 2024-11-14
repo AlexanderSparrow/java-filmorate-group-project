@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -71,7 +72,9 @@ public class FilmService {
     }
 
     public List<Film> getPopularFilms(int count) {
-        return filmStorage.getPopularFilms(count);
+        List <Film> films = filmStorage.getPopularFilms(count);
+        films.forEach(film -> film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId()))));
+        return films;
     }
 
     public List<Genre> getGenresForFilm(long filmId) {
@@ -91,7 +94,7 @@ public class FilmService {
             log.error("Пользователь попытался создать новый фильм с пустым описанием или длинной более 200 символов");
             throw new ValidationExceptions("Введите описание должной не более 200 символов");
         }
-        if (newFilm.getReleaseDate().isBefore(LocalDate.of(1895,12,28))) {
+        if (newFilm.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             log.error("Пользователь попытался создать новый фильм с датой релиза ранее 28.12.1895 года");
             throw new ValidationExceptions("Дата выxода не может быть раньше 28.12.1895 года");
         }
@@ -103,7 +106,15 @@ public class FilmService {
             log.error("Пользователь попытался создать новый фильм без рейтинга");
             throw new ValidationExceptions("Необходимо указать рейтинг");
         }
-
-
+        if (!mpaStorage.findAllMpas().contains(newFilm.getMpa())) {
+            log.error("Пользователь попытался создать фильм c несуществующим рейтингом");
+            throw new ValidationExceptions("Необходимо указать корректный рейтинг");
+        }
+        for (Genre genre : newFilm.getGenres()) {
+            if (!genreStorage.getAllGenres().contains(genre)) {
+                log.error("Пользователь попытался создать фильм с несуществующим жанром");
+                throw new ValidationExceptions("Необходимо указать корректный жанр");
+            }
+        }
     }
 }

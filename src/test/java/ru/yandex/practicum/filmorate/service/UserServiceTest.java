@@ -40,7 +40,6 @@ class UserServiceTest {
         user.setLogin("Login1");
         user.setEmail("Email1@mail.ru");
         user.setBirthday(LocalDate.now());
-        user.setFriends(new LinkedHashSet<>());
         firstUser = userService.createUser(user);
 
         user2 = new User();
@@ -48,7 +47,6 @@ class UserServiceTest {
         user2.setLogin("Login2");
         user2.setEmail("Email2@mail.ru");
         user2.setBirthday(LocalDate.now());
-        user2.setFriends(new LinkedHashSet<>());
         secondUser = userService.createUser(user2);
 
         user3 = new User();
@@ -56,7 +54,6 @@ class UserServiceTest {
         user3.setLogin("Login3");
         user3.setEmail("Email3@mail.ru");
         user3.setBirthday(LocalDate.now());
-        user3.setFriends(new LinkedHashSet<>());
         thirdUser = userService.createUser(user3);
 
     }

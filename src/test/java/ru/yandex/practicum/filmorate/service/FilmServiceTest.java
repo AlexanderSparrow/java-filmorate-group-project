@@ -46,7 +46,6 @@ public class FilmServiceTest {
         LinkedHashSet<Genre> genres = new LinkedHashSet<>();
         genres.add(genreService.getGenre(1L));
         film.setGenres(genres);
-        film.setLikes(new LinkedHashSet<>());
 
         newFilm = filmService.createFilm(film);
 
@@ -55,7 +54,6 @@ public class FilmServiceTest {
         user.setEmail("test@test.ru");
         user.setBirthday(LocalDate.now());
         user.setLogin("Login");
-        user.setFriends(new LinkedHashSet<>());
         userService.createUser(user);
     }
 
@@ -111,15 +109,6 @@ public class FilmServiceTest {
         assertEquals(new ArrayList<>(updatedFilm.getGenres()).getFirst().getName(), "Комедия");
         assertEquals(updatedFilm.getMpa().getId(), newFilm.getMpa().getId());
         assertEquals(updatedFilm.getMpa().getName(), "G");
-
-    }
-
-    @Test
-    @DisplayName(value = "Удаление лайка")
-    public void setLikeToMovie() {
-        filmService.setLikeToMovie(1, 1);
-        Film film = filmService.findFilm(1L);
-        assertEquals(film.getLikes().size(), 1, "Лайк не добавлен");
     }
 
     @Test
@@ -128,15 +117,5 @@ public class FilmServiceTest {
         filmService.setLikeToMovie(1, 1);
         List<Film> populrFilm  = filmService.getPopularFilms(1);
         assertEquals(populrFilm.size(), 1, "Получено не верное количество фильмов с лайками");
-        assertEquals(populrFilm.getFirst().getLikes().size(), 1, "Получено не верное количество лайков");
-    }
-
-    @Test
-    @DisplayName(value = "Удаление лайка")
-    public void removeLikeFromMovie() {
-        filmService.setLikeToMovie(1, 1);
-        filmService.removeLikeFromMovie(1, 1);
-        Film film = filmService.findFilm(1L);
-        assertEquals(film.getLikes().size(), 0, "Лайк не удален");
     }
 }

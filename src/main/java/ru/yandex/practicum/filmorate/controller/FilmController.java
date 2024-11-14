@@ -49,7 +49,7 @@ public class FilmController {
     }
 
     @DeleteMapping (value = "{id}/like/{userId}")
-    public Film removeLikeFromMovie(@PathVariable long id, @PathVariable Long userId) {
+    public Film removeLikeFromMovie(@PathVariable long id, @PathVariable long userId) {
         log.info("Пользователь с id {} удалил лайк фильму с id {}", userId, id);
         return filmService.removeLikeFromMovie(id, userId);
     }
@@ -60,9 +60,9 @@ public class FilmController {
         return filmService.getPopularFilms(count);
     }
 
-    @GetMapping(value = "/film/{id}")
-    public List<Genre> getGenresForFilm(long filmId) {
-        log.info("Запрос на получение жанров для фильма с id {}", filmId);
-        return filmService.getGenresForFilm(filmId);
+    @GetMapping(value = "/genre/{id}")
+    public List<Genre> getGenresForFilm(@PathVariable long id) {
+        log.info("Запрос на получение жанров для фильма с id {}", id);
+        return filmService.getGenresForFilm(id);
     }
 }
