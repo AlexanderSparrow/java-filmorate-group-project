@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.List;
@@ -11,17 +13,14 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
 
     private final FilmService filmService;
 
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
-
     @GetMapping(value = "/{id}")
     public Film findFilm(@PathVariable long id) {
-        log.info("Поиск фильма по id {}", id);
+        log.info("Получен запрос на поиск фильма по id {}", id);
         return filmService.findFilm(id);
     }
 
@@ -45,13 +44,13 @@ public class FilmController {
 
     @PutMapping (value = "{id}/like/{userId}")
     public Film setLikeToMovie(@PathVariable Long id, @PathVariable Long userId) {
-        log.info("Пользователь с id " + userId + " поставил лайк фильму с id " + id);
+        log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, id);
         return filmService.setLikeToMovie(id, userId);
     }
 
     @DeleteMapping (value = "{id}/like/{userId}")
-    public Film removeLikeFromMovie(@PathVariable Long id, @PathVariable Long userId) {
-        log.info("Пользователь с id " + userId + " удалил лайк фильму с id " + id);
+    public Film removeLikeFromMovie(@PathVariable long id, @PathVariable long userId) {
+        log.info("Пользователь с id {} удалил лайк фильму с id {}", userId, id);
         return filmService.removeLikeFromMovie(id, userId);
     }
 
@@ -61,4 +60,9 @@ public class FilmController {
         return filmService.getPopularFilms(count);
     }
 
+    @GetMapping(value = "/genre/{id}")
+    public List<Genre> getGenresForFilm(@PathVariable long id) {
+        log.info("Запрос на получение жанров для фильма с id {}", id);
+        return filmService.getGenresForFilm(id);
+    }
 }
