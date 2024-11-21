@@ -11,7 +11,7 @@ import java.util.List;
 
 @Component
 @Repository
-public class EventRepository extends BaseRepository<Event> implements EventStorage {
+public class EventDbRepository extends BaseRepository<Event> implements EventStorage {
 
     private static final String CREATE_EVENT = "INSERT INTO events " +
             "(USER_ID, EVENT_TYPE, OPERATION, ENTITY_ID, TIME_CREATE) " +
@@ -21,7 +21,7 @@ public class EventRepository extends BaseRepository<Event> implements EventStora
 
 
 
-    public EventRepository(JdbcTemplate jdbc, RowMapper<Event> mapper) {
+    public EventDbRepository(JdbcTemplate jdbc, RowMapper<Event> mapper) {
         super(jdbc, mapper);
     }
 

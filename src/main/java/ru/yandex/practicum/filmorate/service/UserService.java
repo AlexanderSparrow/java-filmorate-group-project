@@ -34,6 +34,8 @@ public class UserService {
     public User createUser(User user) {
         userValidation(user);
 
+        User user1 = userStorage.createUser(user);
+
         Event event = new Event();
         event.setUserId(user.getId());
         event.setEventType("USER");
@@ -43,7 +45,7 @@ public class UserService {
 
         eventService.addEvent(event);
 
-        return userStorage.createUser(user);
+        return user1;
     }
 
     public User updateUser(User user) {
