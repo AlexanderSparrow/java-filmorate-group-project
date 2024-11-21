@@ -17,7 +17,7 @@ public class EventRepository extends BaseRepository<Event> implements EventStora
             "(USER_ID, EVENT_TYPE, OPERATION, ENTITY_ID, TIME_CREATE) " +
             "VALUES(?, ?, ?, ?, ?)";
 
-    private static final String FIND_ALL_EVENTS = "SELECT * FROM EVENTS";
+    private static final String FIND_ALL_EVENTS = "SELECT * FROM EVENTS WHERE USER_ID = ?";
 
 
 
@@ -40,7 +40,7 @@ public class EventRepository extends BaseRepository<Event> implements EventStora
 
     @Override
     public List<Event> getEventsByUserId(Long userId) {
-        return findMany(FIND_ALL_EVENTS);
+        return findMany(FIND_ALL_EVENTS, userId);
     }
 
 }

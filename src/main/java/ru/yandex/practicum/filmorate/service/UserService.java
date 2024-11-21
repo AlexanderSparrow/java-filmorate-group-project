@@ -21,7 +21,7 @@ public class UserService {
 
     private final UserStorage userStorage;
     private final FriendshipStorage friendshipStorage;
-    private final EventStorage eventStorage;
+    private final EventService eventService;
 
     public User findUser(long id) {
         return userStorage.findUser(id);
@@ -41,7 +41,7 @@ public class UserService {
         event.setEntityId(user.getId());
         event.setTimeCreate(LocalDateTime.now());
 
-        eventStorage.addEvent(event);
+        eventService.addEvent(event);
 
         return userStorage.createUser(user);
     }
@@ -57,7 +57,7 @@ public class UserService {
         event.setEntityId(user.getId());
         event.setTimeCreate(LocalDateTime.now());
 
-        eventStorage.addEvent(event);
+        eventService.addEvent(event);
 
         return userStorage.updateUser(user);
     }
@@ -78,7 +78,7 @@ public class UserService {
         event.setEntityId(friendId);
         event.setTimeCreate(LocalDateTime.now());
 
-        eventStorage.addEvent(event);
+        eventService.addEvent(event);
 
         return userStorage.findUser(id);
     }
@@ -99,7 +99,7 @@ public class UserService {
         event.setEntityId(friendId);
         event.setTimeCreate(LocalDateTime.now());
 
-        eventStorage.addEvent(event);
+        eventService.addEvent(event);
 
         return userStorage.findUser(id);
     }

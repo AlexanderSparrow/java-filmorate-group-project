@@ -25,7 +25,7 @@ public class FilmService {
     private final GenreStorage genreStorage;
     private final LikeStorage likeStorage;
     private final UserStorage userStorage;
-    private final EventStorage eventStorage;
+    private final EventService eventService;
 
     public Film findFilm(Long id) {
         Film film = filmStorage.findFilm(id);
@@ -71,7 +71,7 @@ public class FilmService {
         event.setEntityId(filmId);
         event.setTimeCreate(LocalDateTime.now());
 
-        eventStorage.addEvent(event);
+        eventService.addEvent(event);
 
         return filmStorage.findFilm(filmId);
     }
@@ -88,7 +88,7 @@ public class FilmService {
         event.setEntityId(filmId);
         event.setTimeCreate(LocalDateTime.now());
 
-        eventStorage.addEvent(event);
+        eventService.addEvent(event);
 
         return filmStorage.findFilm(filmId);
     }
