@@ -13,5 +13,5 @@ public class Event {
     private String eventType;   // Тип события (например, "LIKE", "REVIEW", "FRIEND")
     private String operation;   // Операция ("ADD", "REMOVE", "UPDATE")
     private Long entityId;      // Идентификатор сущности, связанной с событием (фильм, отзыв, друг)
-    private LocalDateTime timestamp; // Время события
+    private LocalDateTime timeCreate; // Время события
 }

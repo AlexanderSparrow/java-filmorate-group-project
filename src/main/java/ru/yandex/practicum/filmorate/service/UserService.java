@@ -5,10 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.EventStorage;
 import ru.yandex.practicum.filmorate.storage.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.model.Event;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -18,6 +21,7 @@ public class UserService {
 
     private final UserStorage userStorage;
     private final FriendshipStorage friendshipStorage;
+    private final EventStorage eventStorage;
 
     public User findUser(long id) {
         return userStorage.findUser(id);
@@ -29,12 +33,32 @@ public class UserService {
 
     public User createUser(User user) {
         userValidation(user);
+
+        Event event = new Event();
+        event.setUserId(user.getId());
+        event.setEventType("USER");
+        event.setOperation("ADD");
+        event.setEntityId(user.getId());
+        event.setTimeCreate(LocalDateTime.now());
+
+        eventStorage.addEvent(event);
+
         return userStorage.createUser(user);
     }
 
     public User updateUser(User user) {
         userValidation(user);
         userStorage.findUser(user.getId());
+
+        Event event = new Event();
+        event.setUserId(user.getId());
+        event.setEventType("USER");
+        event.setOperation("UPDATE");
+        event.setEntityId(user.getId());
+        event.setTimeCreate(LocalDateTime.now());
+
+        eventStorage.addEvent(event);
+
         return userStorage.updateUser(user);
     }
 
@@ -46,6 +70,16 @@ public class UserService {
             throw new ValidationExceptions("Нельзя добавить себя в друзья");
         }
         friendshipStorage.addFriend(id, friendId);
+
+        Event event = new Event();
+        event.setUserId(id);
+        event.setEventType("FRIEND");
+        event.setOperation("ADD");
+        event.setEntityId(friendId);
+        event.setTimeCreate(LocalDateTime.now());
+
+        eventStorage.addEvent(event);
+
         return userStorage.findUser(id);
     }
 
@@ -57,6 +91,16 @@ public class UserService {
         userStorage.findUser(id);
         userStorage.findUser(friendId);
         friendshipStorage.removeFriend(id, friendId);
+
+        Event event = new Event();
+        event.setUserId(id);
+        event.setEventType("FRIEND");
+        event.setOperation("REMOVE");
+        event.setEntityId(friendId);
+        event.setTimeCreate(LocalDateTime.now());
+
+        eventStorage.addEvent(event);
+
         return userStorage.findUser(id);
     }
 
