@@ -23,6 +23,7 @@ public class FilmService {
     private final GenreStorage genreStorage;
     private final LikeStorage likeStorage;
     private final UserStorage userStorage;
+    private final DirectorStorage directorStorage;
 
     public Film findFilm(Long id) {
         Film film = filmStorage.findFilm(id);
