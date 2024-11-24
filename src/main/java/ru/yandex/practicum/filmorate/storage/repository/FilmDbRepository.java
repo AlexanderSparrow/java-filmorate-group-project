@@ -44,6 +44,15 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
             "GROUP BY f.film_id\n" +
             "ORDER BY COUNT(*) desc\n" +
             "LIMIT ?";
+    private static final String FIND_COMMON_FILM =
+            "SELECT f.film_id AS id, f.film_name AS name, f.film_description AS description, " +
+                    "f.film_release_date AS release_date, f.film_duration AS duration, f.film_mpa AS mpa_id, " +
+                    "mpa.name AS mpa_name " +
+            "FROM USER_LIKES ul " +
+            "INNER JOIN USER_LIKES fl ON fl.film_id = ul.film_id " +
+            "INNER JOIN FILMS f ON ul.film_id = f.film_id " +
+            "INNER JOIN MPA mpa ON mpa.id = f.film_mpa " +
+            "WHERE ul.user_id = ? AND fl.user_id = ?";
 
     public FilmDbRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -104,5 +113,10 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
     @Override
     public List<Film> getPopularFilms(int count) {
         return findMany(FIND_POPULAR_FILMS, count);
+    }
+
+    @Override
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        return findMany(FIND_COMMON_FILM, userId, friendId);
     }
 }

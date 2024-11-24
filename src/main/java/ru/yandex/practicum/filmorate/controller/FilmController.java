@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ import java.util.List;
 public class FilmController {
 
     private final FilmService filmService;
+    private final UserService userService;
 
     @GetMapping(value = "/{id}")
     public Film findFilm(@PathVariable long id) {
@@ -64,5 +66,11 @@ public class FilmController {
     public List<Genre> getGenresForFilm(@PathVariable long id) {
         log.info("Запрос на получение жанров для фильма с id {}", id);
         return filmService.getGenresForFilm(id);
+    }
+
+    @GetMapping(value = "/common")
+    public List<Film> getCommonFilms(@RequestParam long userId, @RequestParam long friendId) {
+        log.info("Запрос на получение общих филмов у пользователя {} и {}", userId, friendId);
+        return filmService.getCommonFilms(userId, friendId);
     }
 }

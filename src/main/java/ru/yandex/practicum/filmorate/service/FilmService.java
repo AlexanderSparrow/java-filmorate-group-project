@@ -66,7 +66,7 @@ public class FilmService {
     public Film removeLikeFromMovie(long filmId, long userId) {
         filmStorage.findFilm(filmId);
         userStorage.findUser(userId);
-        likeStorage.removeLikeFromMovie(filmId, userId);
+        likeStorage.removeLikeFromMovie(userId, filmId);
         return filmStorage.findFilm(filmId);
     }
 
@@ -78,6 +78,12 @@ public class FilmService {
 
     public List<Genre> getGenresForFilm(long filmId) {
         return genreStorage.getGenresForFilm(filmId);
+    }
+
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        List<Film> films = filmStorage.getCommonFilms(userId, friendId);
+        films.forEach(film -> film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId()))));
+        return films;
     }
 
     private void filmValidation(Film newFilm) {
