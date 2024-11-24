@@ -54,6 +54,11 @@ public class FilmController {
         return filmService.removeLikeFromMovie(id, userId);
     }
 
+    @GetMapping("/search")
+    public List<Film> search(@RequestParam String query, @RequestParam String params) {
+        return filmService.searchFilms(query, params);
+    }
+
     @GetMapping("/popular")
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
         log.info("Получение pапроса популярных фильмов");

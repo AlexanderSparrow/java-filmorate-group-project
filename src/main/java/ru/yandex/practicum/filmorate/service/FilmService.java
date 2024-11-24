@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -39,6 +40,13 @@ public class FilmService {
     public Film createFilm(Film newFilm) {
         filmValidation(newFilm);
         return filmStorage.createFilm(newFilm);
+    }
+
+    public List<Film> searchFilms(String query, String params) {
+        if (query == null || query.isBlank()) {
+            throw new ValidationExceptions("Ключевое слово не может быть пустым");
+        }
+        return filmStorage.searchFilms(query, params);
     }
 
     public Film updateFilm(Film newFilm) {

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.repository;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @Repository
@@ -28,6 +30,7 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
             "MPA.NAME AS MPA_NAME " +
             "FROM films AS f " +
             "JOIN MPA ON f.FILM_MPA = MPA.ID ";
+    ;
     private static final String CREATE_FILM = "INSERT INTO films " +
             "(film_name, film_description, film_release_date, film_duration, film_mpa) " +
             "VALUES(?, ?, ?, ?, ?)";
@@ -80,6 +83,18 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
             }
         }
         return film;
+    }
+
+    @Override
+    public List<Film> searchFilms(String query, String params) {
+        List<Film> films = findMany(FIND_ALL_FILMS);
+        if (params.equals("title")) {
+            films = films.stream()
+                    .filter(film -> StringUtils.containsIgnoreCase(film.getName(), (query)))
+                    .collect(Collectors.toList());
+        }
+        System.out.println(films.toString());
+        return films;
     }
 
     @Override
