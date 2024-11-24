@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.LinkedHashSet;
 
 @Data
-@EqualsAndHashCode(of = { "id" })
+@EqualsAndHashCode(of = {"id"})
 public class Film {
     private Long id;
     @NotBlank(message = "Название не может быть пустым")
@@ -24,4 +24,5 @@ public class Film {
     private Long duration;
     private Mpa mpa;
     private LinkedHashSet<Genre> genres = new LinkedHashSet<>();
+    private LinkedHashSet<Director> directors = new LinkedHashSet<>();
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -47,12 +48,14 @@ public class FilmService {
         filmValidation(newFilm);
         final Mpa mpa = mpaStorage.findMpa(newFilm.getMpa().getId());
         final LinkedHashSet<Genre> genres = new LinkedHashSet<>(genreStorage.getGenresForFilm(newFilm.getId()));
+        final LinkedHashSet<Director> directors = new LinkedHashSet<>(directorStorage.getDirectorsForFilm(newFilm.getId()));
         film.setName(newFilm.getName());
         film.setDescription(newFilm.getDescription());
         film.setReleaseDate(newFilm.getReleaseDate());
         film.setDuration(newFilm.getDuration());
         film.setMpa(mpa);
         film.setGenres(genres);
+        film.setDirectors(directors);
         filmStorage.updateFilm(film);
         return film;
     }

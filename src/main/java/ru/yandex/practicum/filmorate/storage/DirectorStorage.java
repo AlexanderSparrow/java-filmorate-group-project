@@ -12,9 +12,12 @@ public interface DirectorStorage {
 
     List<Director> findAll();
 
-    boolean delete (long id);
+    boolean delete(long id);
 
-    Director create (Director director);
+    Director create(Director director);
 
-    Director update (Director newDirector);
+    Director update(Director newDirector);
+
+    List<Director> getDirectorsForFilm(long filmId);
+
 }

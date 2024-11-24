@@ -23,27 +23,26 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
             "FROM films AS f " +
             "JOIN MPA ON f.FILM_MPA = MPA.ID " +
             "WHERE f.film_id = ?";
-    private static final String FIND_ALL_FILMS =             "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
-            "f.film_release_date AS RELEASE_DATE, f.film_duration AS DURATION, f.film_mpa AS MPA_ID, " +
-            "MPA.NAME AS MPA_NAME " +
-            "FROM films AS f " +
-            "JOIN MPA ON f.FILM_MPA = MPA.ID ";
+    private static final String FIND_ALL_FILMS = "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
+                                                 "f.film_release_date AS RELEASE_DATE, f.film_duration AS DURATION, f.film_mpa AS MPA_ID, " +
+                                                 "MPA.NAME AS MPA_NAME " +
+                                                 "FROM films AS f " +
+                                                 "JOIN MPA ON f.FILM_MPA = MPA.ID ";
     private static final String CREATE_FILM = "INSERT INTO films " +
-            "(film_name, film_description, film_release_date, film_duration, film_mpa) " +
-            "VALUES(?, ?, ?, ?, ?)";
+                                              "(film_name, film_description, film_release_date, film_duration, film_mpa) " +
+                                              "VALUES(?, ?, ?, ?, ?)";
     private static final String INSERT_GENRES = "INSERT INTO FILM_GENRES (film_id, genre_id) VALUES(?, ?)";
     private static final String UPDATE_FILM = "UPDATE films SET " +
-            "film_name = ?, film_description = ?, film_release_date = ?, film_duration = ?, film_mpa = ? \n" +
-            "WHERE film_id = ?";
+                                              "film_name = ?, film_description = ?, film_release_date = ?, film_duration = ?, film_mpa = ? \n" +
+                                              "WHERE film_id = ?";
     private static final String DELETE_GENRES = "DELETE FROM FILM_GENRES WHERE film_id = ?";
-    private static final String FIND_POPULAR_FILMS = "SELECT " +
-            "f.film_id, film_name, film_description, film_release_date, film_duration, film_mpa AS MPA_ID, MPA.NAME AS MPA_NAME, COUNT(*)\n" +
-            "FROM films AS f\n" +
-            "JOIN MPA ON f.FILM_MPA = MPA.ID\n" +
-            "JOIN USER_LIKES AS l ON f.film_id = l.film_id\n" +
-            "GROUP BY f.film_id\n" +
-            "ORDER BY COUNT(*) desc\n" +
-            "LIMIT ?";
+    private static final String FIND_POPULAR_FILMS = "SELECT f.film_id, film_name, film_description, film_release_date, " +
+                                                     "film_duration, film_mpa AS MPA_ID, MPA.NAME AS MPA_NAME, " +
+                                                     "COUNT(*) FROM films AS f " +
+                                                     "JOIN MPA ON f.FILM_MPA = MPA.ID " +
+                                                     "JOIN USER_LIKES AS l ON f.film_id = l.film_id " +
+                                                     "GROUP BY f.film_id " +
+                                                     "ORDER BY COUNT(*) desc LIMIT ?";
 
     public FilmDbRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);

@@ -19,11 +19,15 @@ import java.util.Optional;
 @Repository
 public class DirectorDbRepository extends BaseRepository<Director> implements DirectorStorage {
 
-    private static final String FIND_ALL_QUERY = "SELECT * FROM directors";
+    private static final String FIND_ALL_DIRECTORS = "SELECT id, name FROM DIRECTORS ORDER BY ID";
     private static final String FIND_DIRECTOR_BY_ID = "SELECT id, name FROM directors WHERE id = ?";
+
     private static final String DELETE_DIRECTOR_BY_ID = "DELETE FROM directors WHERE id = ?";
     private static final String INSERT_DIRECTOR = "INSERT INTO directors(name) VALUES(?)";
     private static final String UPDATE_DIRECTOR = "UPDATE directors SET name = ? WHERE id = ?";
+
+    private static final String FIND_DIRECTORS_FOR_FILM = "SELECT d.id, d.name FROM FILM_DIRECTORS AS FD \n" +
+                                                          "JOIN DIRECTORS AS d ON d.id = fd.DIRECTOR_id WHERE fd.film_id = ?";
 
     public DirectorDbRepository(JdbcTemplate jdbc, RowMapper<Director> mapper) {
         super(jdbc, mapper);
@@ -39,7 +43,7 @@ public class DirectorDbRepository extends BaseRepository<Director> implements Di
     }
 
     public List<Director> findAll() {
-        return findMany(FIND_ALL_QUERY);
+        return findMany(FIND_ALL_DIRECTORS);
     }
 
     public Director create(Director director) {
@@ -60,5 +64,9 @@ public class DirectorDbRepository extends BaseRepository<Director> implements Di
 
     public boolean delete(long id) {
         return delete(DELETE_DIRECTOR_BY_ID, id);
+    }
+
+    public List<Director> getDirectorsForFilm(long filmId) {
+        return findMany(FIND_DIRECTORS_FOR_FILM, filmId);
     }
 }
