@@ -35,11 +35,12 @@ public class DirectorDbRepository extends BaseRepository<Director> implements Di
 
     private static final String INSERT_DIRECTOR_FOR_FILM = "INSERT INTO FILM_DIRECTORS (FILM_ID, DIRECTOR_ID) VALUES (?, ?)";
 
+
     public DirectorDbRepository(JdbcTemplate jdbc, RowMapper<Director> mapper) {
         super(jdbc, mapper);
     }
 
-    public Director findById(long id) {
+    public Director getDirector(long id) {
         Optional<Director> director = findOne(FIND_DIRECTOR_BY_ID, id);
         if (director.isPresent()) {
             return director.get();
@@ -48,7 +49,7 @@ public class DirectorDbRepository extends BaseRepository<Director> implements Di
         }
     }
 
-    public List<Director> findAll() {
+    public List<Director> getAllDirectors() {
         return findMany(FIND_ALL_DIRECTORS);
     }
 
@@ -76,11 +77,10 @@ public class DirectorDbRepository extends BaseRepository<Director> implements Di
         return findMany(FIND_DIRECTORS_FOR_FILM, filmId);
     }
 
-
     public void addDirectorsToFilm(Long filmId, LinkedHashSet<Director> directors) {
         jdbc.batchUpdate(INSERT_DIRECTOR_FOR_FILM, directors, directors.size(), (ps, director) -> {
             ps.setLong(1, filmId);
-            ps.setLong(2,director.getId());
+            ps.setLong(2, director.getId());
         });
     }
 }

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.repository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Component
 @Repository
 public class FilmDbRepository extends BaseRepository<Film> implements FilmStorage {
@@ -33,12 +35,12 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
                                               "(film_name, film_description, film_release_date, film_duration, film_mpa) " +
                                               "VALUES(?, ?, ?, ?, ?)";
     private static final String INSERT_GENRES = "INSERT INTO FILM_GENRES (film_id, genre_id) VALUES(?, ?)";
-    private static final String INSERT_DIRECTOR = "INSERT INTO FILM_DIRECTORS (film_id, director_id) VALUES(?, ?)"; //TODO
+    private static final String INSERT_DIRECTOR = "INSERT INTO FILM_DIRECTORS (film_id, director_id) VALUES(?, ?)";
     private static final String UPDATE_FILM = "UPDATE films SET " +
                                               "film_name = ?, film_description = ?, film_release_date = ?, film_duration = ?, film_mpa = ? \n" +
                                               "WHERE film_id = ?";
     private static final String DELETE_GENRES = "DELETE FROM FILM_GENRES WHERE film_id = ?";
-    private static final String DELETE_DIRECTORS = "DELETE FROM FILM_DIRECTORS WHERE film_id = ?";//TODO
+    private static final String DELETE_DIRECTOR = "DELETE FROM FILM_DIRECTORS WHERE film_id = ?";
     private static final String FIND_POPULAR_FILMS = "SELECT f.film_id, film_name, film_description, film_release_date, " +
                                                      "film_duration, film_mpa AS MPA_ID, MPA.NAME AS MPA_NAME, " +
                                                      "COUNT(*) FROM films AS f " +
@@ -87,6 +89,16 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
                 insert(INSERT_DIRECTOR, film.getId(), director.getId());
             }
         }
+
+        if (film.getDirectors() != null && !film.getDirectors().isEmpty()) {
+            log.debug("Deleting old directors for film {}", film.getId());
+            delete(DELETE_DIRECTOR, film.getId());
+            for (Director director : film.getDirectors()) {
+                log.debug("Inserting director {} for film {}", director.getId(), film.getId());
+                insert(INSERT_DIRECTOR, film.getId(), director.getId());
+            }
+        }
+
         return film;
     }
 
@@ -108,12 +120,13 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
         }
 
         if (film.getDirectors() != null && !film.getDirectors().isEmpty()) {
-            delete(DELETE_DIRECTORS, film.getId());
+            log.debug("Deleting old directors for film {}", film.getId());
+            delete(DELETE_DIRECTOR, film.getId());
             for (Director director : film.getDirectors()) {
+                log.debug("Inserting director {} for film {}", director.getId(), film.getId());
                 insert(INSERT_DIRECTOR, film.getId(), director.getId());
             }
         }
-
         return film;
     }
 

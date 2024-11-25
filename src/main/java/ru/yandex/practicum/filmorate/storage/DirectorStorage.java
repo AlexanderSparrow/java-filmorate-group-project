@@ -9,9 +9,9 @@ import java.util.List;
 @Service
 public interface DirectorStorage {
 
-    Director findById(long id);
+    Director getDirector(long id);
 
-    List<Director> findAll();
+    List<Director> getAllDirectors();
 
     boolean delete(long id);
 

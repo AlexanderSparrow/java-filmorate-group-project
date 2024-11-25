@@ -17,11 +17,11 @@ public class DirectorService {
     private final DirectorStorage directorStorage;
 
     public Director findById(long id) {
-        return directorStorage.findById(id);
+        return directorStorage.getDirector(id);
     }
 
     public List<Director> findAll() {
-        return directorStorage.findAll();
+        return directorStorage.getAllDirectors();
     }
 
     public Director create(Director director) {
@@ -31,7 +31,7 @@ public class DirectorService {
 
     public Director update(Director director) {
         directorValidation(director);
-        directorStorage.findById(director.getId());
+        directorStorage.getDirector(director.getId());
         return directorStorage.update(director);
     }
 

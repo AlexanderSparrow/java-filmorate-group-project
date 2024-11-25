@@ -67,9 +67,9 @@ public class FilmController {
         return filmService.getGenresForFilm(id);
     }
 
-    @GetMapping(value = "/director/{id}")
-    public List<Director> getDirectorForFilm(@PathVariable long id) {
-        log.info("Запрос на получение режиссеров фильма с id {}", id);
+    @GetMapping(value = "/directors/{id}")
+    public List<Director> getDirectorsForFilm(@PathVariable long id) {
+        log.info("Запрос на получение режиссера(ов) для фильма с id {}", id);
         return filmService.getDirectorsForFilm(id);
     }
 }

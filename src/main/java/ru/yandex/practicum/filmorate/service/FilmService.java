@@ -29,12 +29,14 @@ public class FilmService {
     public Film findFilm(Long id) {
         Film film = filmStorage.findFilm(id);
         film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(id)));
+        film.setDirectors(new LinkedHashSet<>(directorStorage.getDirectorsForFilm(id)));
         return film;
     }
 
     public List<Film> findAllFilms() {
         List<Film> films = filmStorage.findAllFilms();
         films.forEach(film -> film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId()))));
+        films.forEach(film -> film.setDirectors(new LinkedHashSet<>(directorStorage.getDirectorsForFilm(film.getId()))));
         return films;
     }
 
