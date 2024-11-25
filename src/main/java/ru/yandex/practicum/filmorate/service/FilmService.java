@@ -10,8 +10,10 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -78,6 +80,31 @@ public class FilmService {
 
     public List<Genre> getGenresForFilm(long filmId) {
         return genreStorage.getGenresForFilm(filmId);
+    }
+
+    public List<Film> getFilmRecommendations(long userId) {
+        List<Film> favoriteMovies = filmStorage.getFavoriteMovies(userId);
+
+        if (favoriteMovies.isEmpty())
+            return new ArrayList<>();
+
+        List<Film> filmIntersections = filmStorage
+                .findFilmIntersections(userId, favoriteMovies.stream().map(Film::getId).collect(Collectors.toList()));
+
+        if (filmIntersections.isEmpty())
+            return new ArrayList<>();
+
+        List<Film> recommendedFilms = new ArrayList<>();
+
+        for (Film film : filmIntersections) {
+            boolean shouldRecommended = favoriteMovies.stream().noneMatch(f -> f.getId().equals(film.getId()));
+
+            if (shouldRecommended) {
+                recommendedFilms.add(film);
+            }
+        }
+
+        return recommendedFilms;
     }
 
     private void filmValidation(Film newFilm) {

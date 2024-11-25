@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +45,35 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
             "GROUP BY f.film_id\n" +
             "ORDER BY COUNT(*) desc\n" +
             "LIMIT ?";
+    private static final String FIND_FAVORITE_MOVIES =
+            """
+             SELECT
+                f.film_id AS id, f.film_name AS name,
+                f.film_description AS description,
+                f.film_release_date AS release_date,
+                f.film_duration AS duration,
+                f.film_mpa AS mpa_id, mpa.name AS mpa_name
+             FROM USER_LIKES ul
+             INNER JOIN FILMS f ON ul.film_id = f.film_id
+             INNER JOIN MPA mpa ON mpa.id = f.film_mpa
+             WHERE ul.user_id = ?
+            """;
+    private static final String GET_FILM_RECOMMENDATIONS =
+            """
+             SELECT
+                f.film_id AS id, f.film_name AS name,
+                f.film_description AS description,
+                f.film_release_date AS release_date,
+                f.film_duration AS duration,
+                f.film_mpa AS mpa_id, mpa.name AS mpa_name
+             FROM USER_LIKES ul
+             INNER JOIN FILMS f ON ul.film_id = f.film_id
+             INNER JOIN MPA mpa ON mpa.id = f.film_mpa
+             WHERE ul.user_id IN
+                (SELECT ul2.user_id FROM USER_LIKES ul2
+                WHERE ul2.user_id <> ? AND ul2.film_id = ANY(?)
+                GROUP BY ul2.user_id ORDER BY COUNT(*) DESC LIMIT 1)
+            """;
 
     public FilmDbRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -104,5 +134,15 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
     @Override
     public List<Film> getPopularFilms(int count) {
         return findMany(FIND_POPULAR_FILMS, count);
+    }
+
+    @Override
+    public List<Film> getFavoriteMovies(long userId) {
+        return findMany(FIND_FAVORITE_MOVIES, userId);
+    }
+
+    @Override
+    public List<Film> findFilmIntersections(long userId, Collection<Long> filmsId) {
+        return findMany(GET_FILM_RECOMMENDATIONS, userId, filmsId.toArray());
     }
 }
