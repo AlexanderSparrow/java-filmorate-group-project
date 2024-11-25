@@ -120,13 +120,12 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
         }
 
         if (film.getDirectors() != null && !film.getDirectors().isEmpty()) {
-            log.debug("Deleting old directors for film {}", film.getId());
             delete(DELETE_DIRECTOR, film.getId());
             for (Director director : film.getDirectors()) {
-                log.debug("Inserting director {} for film {}", director.getId(), film.getId());
                 insert(INSERT_DIRECTOR, film.getId(), director.getId());
             }
         }
+
         return film;
     }
 
