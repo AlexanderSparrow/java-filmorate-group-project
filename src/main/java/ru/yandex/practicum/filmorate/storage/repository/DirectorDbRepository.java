@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.repository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,10 +12,13 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 
 import java.sql.PreparedStatement;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+
+@Slf4j
 @Component
 @Repository
 public class DirectorDbRepository extends BaseRepository<Director> implements DirectorStorage {
@@ -28,6 +32,8 @@ public class DirectorDbRepository extends BaseRepository<Director> implements Di
 
     private static final String FIND_DIRECTORS_FOR_FILM = "SELECT d.id, d.name FROM FILM_DIRECTORS AS FD \n" +
                                                           "JOIN DIRECTORS AS d ON d.id = fd.DIRECTOR_id WHERE fd.film_id = ?";
+
+    private static final String INSERT_DIRECTOR_FOR_FILM = "INSERT INTO FILM_DIRECTORS (FILM_ID, DIRECTOR_ID) VALUES (?, ?)";
 
     public DirectorDbRepository(JdbcTemplate jdbc, RowMapper<Director> mapper) {
         super(jdbc, mapper);
@@ -68,5 +74,13 @@ public class DirectorDbRepository extends BaseRepository<Director> implements Di
 
     public List<Director> getDirectorsForFilm(long filmId) {
         return findMany(FIND_DIRECTORS_FOR_FILM, filmId);
+    }
+
+
+    public void addDirectorsToFilm(Long filmId, LinkedHashSet<Director> directors) {
+        jdbc.batchUpdate(INSERT_DIRECTOR_FOR_FILM, directors, directors.size(), (ps, director) -> {
+            ps.setLong(1, filmId);
+            ps.setLong(2,director.getId());
+        });
     }
 }

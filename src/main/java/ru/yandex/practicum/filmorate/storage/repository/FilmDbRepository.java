@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundExceptions;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -32,10 +33,12 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
                                               "(film_name, film_description, film_release_date, film_duration, film_mpa) " +
                                               "VALUES(?, ?, ?, ?, ?)";
     private static final String INSERT_GENRES = "INSERT INTO FILM_GENRES (film_id, genre_id) VALUES(?, ?)";
+    private static final String INSERT_DIRECTOR = "INSERT INTO FILM_DIRECTORS (film_id, director_id) VALUES(?, ?)"; //TODO
     private static final String UPDATE_FILM = "UPDATE films SET " +
                                               "film_name = ?, film_description = ?, film_release_date = ?, film_duration = ?, film_mpa = ? \n" +
                                               "WHERE film_id = ?";
     private static final String DELETE_GENRES = "DELETE FROM FILM_GENRES WHERE film_id = ?";
+    private static final String DELETE_DIRECTORS = "DELETE FROM FILM_DIRECTORS WHERE film_id = ?";//TODO
     private static final String FIND_POPULAR_FILMS = "SELECT f.film_id, film_name, film_description, film_release_date, " +
                                                      "film_duration, film_mpa AS MPA_ID, MPA.NAME AS MPA_NAME, " +
                                                      "COUNT(*) FROM films AS f " +
@@ -78,6 +81,12 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
                 insert(INSERT_GENRES, film.getId(), genre.getId());
             }
         }
+
+        if (film.getDirectors() != null && !film.getDirectors().isEmpty()) {
+            for (Director director : film.getDirectors()) {
+                insert(INSERT_DIRECTOR, film.getId(), director.getId());
+            }
+        }
         return film;
     }
 
@@ -97,6 +106,14 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
                 insert(INSERT_GENRES, film.getId(), genre.getId());
             }
         }
+
+        if (film.getDirectors() != null && !film.getDirectors().isEmpty()) {
+            delete(DELETE_DIRECTORS, film.getId());
+            for (Director director : film.getDirectors()) {
+                insert(INSERT_DIRECTOR, film.getId(), director.getId());
+            }
+        }
+
         return film;
     }
 

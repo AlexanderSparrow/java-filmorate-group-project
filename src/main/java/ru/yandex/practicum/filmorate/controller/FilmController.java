@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -64,5 +65,11 @@ public class FilmController {
     public List<Genre> getGenresForFilm(@PathVariable long id) {
         log.info("Запрос на получение жанров для фильма с id {}", id);
         return filmService.getGenresForFilm(id);
+    }
+
+    @GetMapping(value = "/director/{id}")
+    public List<Director> getDirectorForFilm(@PathVariable long id) {
+        log.info("Запрос на получение режиссеров фильма с id {}", id);
+        return filmService.getDirectorsForFilm(id);
     }
 }

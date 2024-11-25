@@ -84,6 +84,9 @@ public class FilmService {
         return genreStorage.getGenresForFilm(filmId);
     }
 
+    public List<Director> getDirectorsForFilm(long filmId) { return  directorStorage.getDirectorsForFilm(filmId);
+    }
+
     private void filmValidation(Film newFilm) {
         if (newFilm == null) {
             log.error("Пользователь попытался создать новый фильм с пустым объектом");
@@ -120,4 +123,6 @@ public class FilmService {
             }
         }
     }
+
+
 }
