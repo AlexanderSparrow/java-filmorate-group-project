@@ -54,15 +54,27 @@ public class FilmController {
         return filmService.removeLikeFromMovie(id, userId);
     }
 
-    @GetMapping("/popular")
+    /*@GetMapping("/popular")
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
         log.info("Получение pапроса популярных фильмов");
         return filmService.getPopularFilms(count);
-    }
+    }*/
 
     @GetMapping(value = "/genre/{id}")
     public List<Genre> getGenresForFilm(@PathVariable long id) {
         log.info("Запрос на получение жанров для фильма с id {}", id);
         return filmService.getGenresForFilm(id);
     }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilms(
+            @RequestParam(defaultValue = "10") int count,
+            @RequestParam(required = false) Long genreId,
+            @RequestParam(required = false) Integer year
+    ) {
+        log.info("Получение запроса популярных фильмов с параметрами count={}, genreId={}, year={}", count, genreId, year);
+        return filmService.getPopularFilms(count, genreId, year);
+    }
+
+
 }

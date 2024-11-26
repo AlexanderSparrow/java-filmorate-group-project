@@ -70,8 +70,8 @@ public class FilmService {
         return filmStorage.findFilm(filmId);
     }
 
-    public List<Film> getPopularFilms(int count) {
-        List<Film> films = filmStorage.getPopularFilms(count);
+    public List<Film> getPopularFilms(int count, Long genreId, Integer year) {
+        List<Film> films = filmStorage.getPopularFilms(count, genreId, year);
         films.forEach(film -> film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId()))));
         return films;
     }
