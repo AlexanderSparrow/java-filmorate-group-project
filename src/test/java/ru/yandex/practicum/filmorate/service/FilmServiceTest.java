@@ -29,7 +29,7 @@ public class FilmServiceTest {
     private final FilmService filmService;
     private final MpaService mpaService;
     private final GenreService genreService;
-    private final  UserService userService;
+    private final UserService userService;
     private Film film;
     private Film newFilm;
     private Film newFilm2;
@@ -151,13 +151,5 @@ public class FilmServiceTest {
         assertEquals(addedSecondFilm.getId(), popularByBoth.get(0).getId()); // Фильтруется по жанру и году
     }
 
-
-    /*@Test
-    @DisplayName(value = "Получение лайка")
-    public void getPopularFilmsTest() {
-        filmService.setLikeToMovie(1, 1);
-        List<Film> populrFilm  = filmService.getPopularFilms(1);
-        assertEquals(populrFilm.size(), 1, "Получено не верное количество фильмов с лайками");
-    }*/
 
 }
