@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.SortType;
 
 import java.util.List;
 
@@ -17,4 +18,6 @@ public interface FilmStorage {
     Film updateFilm(Film film);
 
     List<Film> getPopularFilms(int count);
+
+    List<Film> getFilmsByDirector(long directorId, SortType sortType);
 }

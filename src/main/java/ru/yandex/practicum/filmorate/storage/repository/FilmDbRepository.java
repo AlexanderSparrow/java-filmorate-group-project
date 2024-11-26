@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundExceptions;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.SortType;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.List;
@@ -21,33 +22,45 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
 
     private static final String FIND_FILM_BY_ID =
             "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
+                    "f.film_release_date AS RELEASE_DATE, f.film_duration AS DURATION, f.film_mpa AS MPA_ID, " +
+                    "MPA.NAME AS MPA_NAME " +
+                    "FROM films AS f " +
+                    "JOIN MPA ON f.FILM_MPA = MPA.ID " +
+                    "WHERE f.film_id = ?";
+    private static final String FIND_ALL_FILMS = "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
             "f.film_release_date AS RELEASE_DATE, f.film_duration AS DURATION, f.film_mpa AS MPA_ID, " +
             "MPA.NAME AS MPA_NAME " +
             "FROM films AS f " +
-            "JOIN MPA ON f.FILM_MPA = MPA.ID " +
-            "WHERE f.film_id = ?";
-    private static final String FIND_ALL_FILMS = "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
-                                                 "f.film_release_date AS RELEASE_DATE, f.film_duration AS DURATION, f.film_mpa AS MPA_ID, " +
-                                                 "MPA.NAME AS MPA_NAME " +
-                                                 "FROM films AS f " +
-                                                 "JOIN MPA ON f.FILM_MPA = MPA.ID ";
+            "JOIN MPA ON f.FILM_MPA = MPA.ID ";
     private static final String CREATE_FILM = "INSERT INTO films " +
-                                              "(film_name, film_description, film_release_date, film_duration, film_mpa) " +
-                                              "VALUES(?, ?, ?, ?, ?)";
+            "(film_name, film_description, film_release_date, film_duration, film_mpa) " +
+            "VALUES(?, ?, ?, ?, ?)";
     private static final String INSERT_GENRES = "INSERT INTO FILM_GENRES (film_id, genre_id) VALUES(?, ?)";
     private static final String INSERT_DIRECTOR = "INSERT INTO FILM_DIRECTORS (film_id, director_id) VALUES(?, ?)";
     private static final String UPDATE_FILM = "UPDATE films SET " +
-                                              "film_name = ?, film_description = ?, film_release_date = ?, film_duration = ?, film_mpa = ? \n" +
-                                              "WHERE film_id = ?";
+            "film_name = ?, film_description = ?, film_release_date = ?, film_duration = ?, film_mpa = ? \n" +
+            "WHERE film_id = ?";
     private static final String DELETE_GENRES = "DELETE FROM FILM_GENRES WHERE film_id = ?";
     private static final String DELETE_DIRECTOR = "DELETE FROM FILM_DIRECTORS WHERE film_id = ?";
     private static final String FIND_POPULAR_FILMS = "SELECT f.film_id, film_name, film_description, film_release_date, " +
-                                                     "film_duration, film_mpa AS MPA_ID, MPA.NAME AS MPA_NAME, " +
-                                                     "COUNT(*) FROM films AS f " +
-                                                     "JOIN MPA ON f.FILM_MPA = MPA.ID " +
-                                                     "JOIN USER_LIKES AS l ON f.film_id = l.film_id " +
-                                                     "GROUP BY f.film_id " +
-                                                     "ORDER BY COUNT(*) desc LIMIT ?";
+            "film_duration, film_mpa AS MPA_ID, MPA.NAME AS MPA_NAME, " +
+            "COUNT(*) FROM films AS f " +
+            "JOIN MPA ON f.FILM_MPA = MPA.ID " +
+            "JOIN USER_LIKES AS l ON f.film_id = l.film_id " +
+            "GROUP BY f.film_id " +
+            "ORDER BY COUNT(*) desc LIMIT ?";
+
+
+    private static final String FIND_FILMS_FOR_DIRECTOR = """
+            SELECT f.*, f.film_mpa AS MPA_ID,
+            MPA.NAME AS MPA_NAME, count(ul.id) as likes
+            FROM FILM_DIRECTORS AS FD
+            JOIN FILMS AS f ON f.film_id = fd.film_id JOIN MPA ON f.FILM_MPA = MPA.ID
+            LEFT JOIN USER_LIKES ul on f.film_id=ul.film_id
+             WHERE fd.director_id = ?
+             group by f.FILM_ID, f.FILM_NAME, f.FILM_DESCRIPTION, f.FILM_RELEASE_DATE, f.FILM_DURATION,
+             f.FILM_MPA, f.film_mpa, MPA.NAME
+            """;
 
     public FilmDbRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -132,5 +145,11 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
     @Override
     public List<Film> getPopularFilms(int count) {
         return findMany(FIND_POPULAR_FILMS, count);
+    }
+
+
+    @Override
+    public List<Film> getFilmsByDirector(long directorId, SortType sortType) {
+        return findMany(FIND_FILMS_FOR_DIRECTOR + " ORDER BY " + sortType.getDbFieldName(), directorId);
     }
 }

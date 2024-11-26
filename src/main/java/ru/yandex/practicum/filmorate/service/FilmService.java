@@ -3,11 +3,9 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
-import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.*;
 
 import java.time.LocalDate;
@@ -45,6 +43,7 @@ public class FilmService {
         return filmStorage.createFilm(newFilm);
     }
 
+    @Transactional
     public Film updateFilm(Film newFilm) {
         final Film film = filmStorage.findFilm(newFilm.getId());
         filmValidation(newFilm);
@@ -57,7 +56,7 @@ public class FilmService {
         film.setDuration(newFilm.getDuration());
         film.setMpa(mpa);
         film.setGenres(genres);
-        film.setDirectors(directors);
+        film.setDirectors(newFilm.getDirectors());
         filmStorage.updateFilm(film);
         return film;
     }
@@ -86,7 +85,15 @@ public class FilmService {
         return genreStorage.getGenresForFilm(filmId);
     }
 
-    public List<Director> getDirectorsForFilm(long filmId) { return  directorStorage.getDirectorsForFilm(filmId);
+    public List<Director> getDirectorsForFilm(long filmId) {
+        return directorStorage.getDirectorsForFilm(filmId);
+    }
+
+    public List<Film> getFilmByDirector(long directorId, SortType sortType) {
+        return filmStorage.getFilmsByDirector(directorId, sortType)
+                .stream()
+                .peek(p -> p.setDirectors(directorStorage.getDirectorsForFilm(p.getId())))
+                .toList();
     }
 
     private void filmValidation(Film newFilm) {
