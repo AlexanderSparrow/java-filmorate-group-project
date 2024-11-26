@@ -29,14 +29,14 @@ public class FilmService {
     public Film findFilm(Long id) {
         Film film = filmStorage.findFilm(id);
         film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(id)));
-        film.setDirectors(new LinkedHashSet<>(directorStorage.getDirectorsForFilm(id)));
+        film.setDirectors(directorStorage.getDirectorsForFilm(id));
         return film;
     }
 
     public List<Film> findAllFilms() {
         List<Film> films = filmStorage.findAllFilms();
         films.forEach(film -> film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId()))));
-        films.forEach(film -> film.setDirectors(new LinkedHashSet<>(directorStorage.getDirectorsForFilm(film.getId()))));
+        films.forEach(film -> film.setDirectors(directorStorage.getDirectorsForFilm(film.getId())));
         return films;
     }
 
@@ -50,7 +50,7 @@ public class FilmService {
         filmValidation(newFilm);
         final Mpa mpa = mpaStorage.findMpa(newFilm.getMpa().getId());
         final LinkedHashSet<Genre> genres = new LinkedHashSet<>(genreStorage.getGenresForFilm(newFilm.getId()));
-        final LinkedHashSet<Director> directors = new LinkedHashSet<>(directorStorage.getDirectorsForFilm(newFilm.getId()));
+        final List<Director> directors = directorStorage.getDirectorsForFilm(newFilm.getId());
         film.setName(newFilm.getName());
         film.setDescription(newFilm.getDescription());
         film.setReleaseDate(newFilm.getReleaseDate());

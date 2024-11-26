@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
-import java.util.LinkedHashSet;
+import java.util.*;
 
 @Data
 @EqualsAndHashCode(of = {"id"})
@@ -24,6 +24,5 @@ public class Film {
     private Long duration;
     private Mpa mpa;
     private LinkedHashSet<Genre> genres = new LinkedHashSet<>();
-    private LinkedHashSet<Director> directors = new LinkedHashSet<>();
-
+    private List<Director> directors = new ArrayList<>();
 }
