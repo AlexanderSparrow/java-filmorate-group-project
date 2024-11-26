@@ -49,7 +49,6 @@ public class FilmService {
         filmValidation(newFilm);
         final Mpa mpa = mpaStorage.findMpa(newFilm.getMpa().getId());
         final LinkedHashSet<Genre> genres = new LinkedHashSet<>(genreStorage.getGenresForFilm(newFilm.getId()));
-        final List<Director> directors = directorStorage.getDirectorsForFilm(newFilm.getId());
         film.setName(newFilm.getName());
         film.setDescription(newFilm.getDescription());
         film.setReleaseDate(newFilm.getReleaseDate());
