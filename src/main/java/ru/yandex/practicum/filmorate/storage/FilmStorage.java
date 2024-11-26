@@ -16,7 +16,6 @@ public interface FilmStorage {
 
     Film updateFilm(Film film);
 
-    //List<Film> getPopularFilms(int count);
     List<Film> getPopularFilms(int count, Long genreId, Integer year);
 
 }
