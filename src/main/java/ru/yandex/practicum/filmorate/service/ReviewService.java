@@ -19,7 +19,7 @@ public class ReviewService {
 
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
-    final private FilmStorage filmStorage;
+    private final FilmStorage filmStorage;
 
     public Review getReview(long id) {
         return reviewStorage.getReview(id);
@@ -66,7 +66,7 @@ public class ReviewService {
         if (reviewStorage.isLikeOrDislikeExists(id, userId, true)) {
             deleteLikeReview(id, userId);
         }
-        if (!reviewStorage.isLikeOrDislikeExists(id, userId ,false)) {
+        if (!reviewStorage.isLikeOrDislikeExists(id, userId,false)) {
             return reviewStorage.dislikeReview(id, userId);
         } else {
             throw new ValidationExceptions("Вы уже поставили дизлайк этому ревью");
@@ -74,7 +74,7 @@ public class ReviewService {
     }
 
     public Review deleteDislikeReview(long id, long userId) {
-        if (reviewStorage.isLikeOrDislikeExists(id, userId , false)) {
+        if (reviewStorage.isLikeOrDislikeExists(id, userId, false)) {
             return reviewStorage.deleteDislikeReview(id, userId);
         } else {
             throw new ValidationExceptions("Нельзя удалить несуществующий лайк");
@@ -82,9 +82,9 @@ public class ReviewService {
     }
 
     public Review deleteLikeReview(long id, long userId) {
-        if (reviewStorage.isLikeOrDislikeExists(id, userId , true)) {
+        if (reviewStorage.isLikeOrDislikeExists(id, userId, true)) {
             return reviewStorage.deleteLikeReview(id, userId);
-        }else {
+        } else {
             throw new ValidationExceptions("Нельзя удалить несуществующий лайк");
         }
     }
