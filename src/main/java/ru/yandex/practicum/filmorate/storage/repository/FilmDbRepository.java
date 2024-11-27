@@ -163,6 +163,7 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
     @Override
     public List<Film> getFilmsByDirector(long directorId, SortType sortType) {
         return findMany(FIND_FILMS_FOR_DIRECTOR + " ORDER BY " + sortType.getDbFieldName(), directorId);
+    }
 
     @Override
     public List<Film> getCommonFilms(long userId, long friendId) {
