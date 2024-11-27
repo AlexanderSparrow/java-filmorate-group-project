@@ -76,7 +76,7 @@ public class FilmController {
         log.info("Запрос на удаление фильма с id {},", id);
         filmService.deleteFilm(id);
     }
-  
+    
     @GetMapping(value = "/directors/{id}")
     public List<Director> getDirectorsForFilm(@PathVariable long id) {
         log.info("Запрос на получение режиссера(ов) для фильма с id {}", id);
