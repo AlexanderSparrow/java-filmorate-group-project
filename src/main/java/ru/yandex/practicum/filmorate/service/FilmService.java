@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.*;
@@ -43,7 +42,6 @@ public class FilmService {
         return filmStorage.createFilm(newFilm);
     }
 
-   // @Transactional
     public Film updateFilm(Film newFilm) {
         final Film film = filmStorage.findFilm(newFilm.getId());
         filmValidation(newFilm);
