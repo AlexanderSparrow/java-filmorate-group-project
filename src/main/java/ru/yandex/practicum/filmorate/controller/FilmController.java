@@ -65,4 +65,10 @@ public class FilmController {
         log.info("Запрос на получение жанров для фильма с id {}", id);
         return filmService.getGenresForFilm(id);
     }
+
+    @DeleteMapping(value = "/{id}")
+    public void deleteFilm(@PathVariable long id) {
+        log.info("Запрос на удаление фильма с id {},", id);
+        filmService.deleteFilm(id);
+    }
 }

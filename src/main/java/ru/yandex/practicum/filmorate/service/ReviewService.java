@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundExceptions;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -44,7 +43,8 @@ public class ReviewService {
     }
 
     public void deleteReview(long id) {
-        if (reviewStorage.isReviewExists(getReview(id).getFilmId(), getReview(id).getUserId())) {
+        Review review = getReview(id);
+        if (reviewStorage.isReviewExists(review.getFilmId(), review.getUserId())) {
             reviewStorage.deleteReview(id);
         } else {
             throw new ValidationExceptions("Нельзя удалить несуществующее отзыв");
@@ -90,17 +90,7 @@ public class ReviewService {
     }
 
     public void validateReview(Review review) {
-        System.out.println(review.getUserId());
-        try {
-            userStorage.findUser(review.getUserId());
-        } catch (NotFoundExceptions e) {
-            throw new NotFoundExceptions("Указан не верный Пользователь");
-        }
-        try {
-            filmStorage.findFilm(review.getFilmId());
-        } catch (NotFoundExceptions e) {
-             throw new NotFoundExceptions("Указан не верный Фильм");
-        }
-
+              userStorage.findUser(review.getUserId());
+              filmStorage.findFilm(review.getFilmId());
     }
 }

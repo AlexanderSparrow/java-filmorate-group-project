@@ -56,6 +56,11 @@ public class FilmService {
         return film;
     }
 
+    public void deleteFilm(long id) {
+        filmStorage.findFilm(id);
+        filmStorage.deleteFilm(id);
+    }
+
     public Film setLikeToMovie(long filmId, long userId) {
         filmStorage.findFilm(filmId);
         userStorage.findUser(userId);

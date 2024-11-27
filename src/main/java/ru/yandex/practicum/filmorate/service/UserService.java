@@ -38,6 +38,11 @@ public class UserService {
         return userStorage.updateUser(user);
     }
 
+    public void deleteUser(long id) {
+        userStorage.findUser(id);
+        userStorage.deleteUser(id);
+    }
+
     public User addFriend(long id, long friendId) {
         userStorage.findUser(id);
         userStorage.findUser(friendId);
