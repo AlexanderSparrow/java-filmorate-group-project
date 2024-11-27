@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.*;
 
 import java.time.LocalDate;
@@ -23,16 +21,19 @@ public class FilmService {
     private final GenreStorage genreStorage;
     private final LikeStorage likeStorage;
     private final UserStorage userStorage;
+    private final DirectorStorage directorStorage;
 
     public Film findFilm(Long id) {
         Film film = filmStorage.findFilm(id);
         film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(id)));
+        film.setDirectors(directorStorage.getDirectorsForFilm(id));
         return film;
     }
 
     public List<Film> findAllFilms() {
         List<Film> films = filmStorage.findAllFilms();
         films.forEach(film -> film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId()))));
+        films.forEach(film -> film.setDirectors(directorStorage.getDirectorsForFilm(film.getId())));
         return films;
     }
 
@@ -52,6 +53,7 @@ public class FilmService {
         film.setDuration(newFilm.getDuration());
         film.setMpa(mpa);
         film.setGenres(genres);
+        film.setDirectors(newFilm.getDirectors());
         filmStorage.updateFilm(film);
         return film;
     }
@@ -78,6 +80,18 @@ public class FilmService {
 
     public List<Genre> getGenresForFilm(long filmId) {
         return genreStorage.getGenresForFilm(filmId);
+    }
+
+
+    public List<Director> getDirectorsForFilm(long filmId) {
+        return directorStorage.getDirectorsForFilm(filmId);
+    }
+
+    public List<Film> getFilmByDirector(long directorId, SortType sortType) {
+        return filmStorage.getFilmsByDirector(directorId, sortType)
+                .stream()
+                .peek(p -> p.setDirectors(directorStorage.getDirectorsForFilm(p.getId())))
+                .toList();
     }
 
     public List<Film> getCommonFilms(long userId, long friendId) {

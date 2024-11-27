@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.repository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -11,13 +12,14 @@ import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Component
 @Repository
 public class GenreDbRepository extends BaseRepository<Genre> implements GenreStorage {
     private static final String FIND_GENRE = "SELECT * FROM GENRES WHERE id = ?";
     private static final String FIND_ALL_GENRES = "SELECT * FROM GENRES ORDER BY ID";
     private static final String FIND_GENRES_FOR_FILM = "SELECT g.id, g.name FROM FILM_GENRES AS FG \n" +
-            "JOIN GENRES AS g ON g.id = fg.GENRE_id WHERE fg.film_id = ?";
+                                                       "JOIN GENRES AS g ON g.id = fg.GENRE_id WHERE fg.film_id = ?";
 
     public GenreDbRepository(JdbcTemplate jdbc, RowMapper<Genre> mapper) {
         super(jdbc, mapper);
