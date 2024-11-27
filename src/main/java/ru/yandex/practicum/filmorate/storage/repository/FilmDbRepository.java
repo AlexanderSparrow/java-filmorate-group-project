@@ -49,18 +49,31 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
             "JOIN USER_LIKES AS l ON f.film_id = l.film_id " +
             "GROUP BY f.film_id " +
             "ORDER BY COUNT(*) desc LIMIT ?";
-
-
-    private static final String FIND_FILMS_FOR_DIRECTOR = """
-            SELECT f.*, f.film_mpa AS MPA_ID,
-            MPA.NAME AS MPA_NAME, count(ul.id) as likes
-            FROM FILM_DIRECTORS AS FD
-            JOIN FILMS AS f ON f.film_id = fd.film_id JOIN MPA ON f.FILM_MPA = MPA.ID
-            LEFT JOIN USER_LIKES ul on f.film_id=ul.film_id
-             WHERE fd.director_id = ?
-             group by f.FILM_ID, f.FILM_NAME, f.FILM_DESCRIPTION, f.FILM_RELEASE_DATE, f.FILM_DURATION,
-             f.FILM_MPA, f.film_mpa, MPA.NAME
-            """;
+    private static final String FIND_FILMS_FOR_DIRECTOR = "SELECT f.*, f.film_mpa AS MPA_ID, " +
+            "MPA.NAME AS MPA_NAME, count(ul.id) as likes " +
+            "FROM FILM_DIRECTORS AS FD " +
+            "JOIN FILMS AS f ON f.film_id = fd.film_id JOIN MPA ON f.FILM_MPA = MPA.ID " +
+            "LEFT JOIN USER_LIKES ul on f.film_id=ul.film_id " +
+            "WHERE fd.director_id = ? " +
+            "group by f.FILM_ID, f.FILM_NAME, f.FILM_DESCRIPTION, f.FILM_RELEASE_DATE, f.FILM_DURATION, " +
+            "f.FILM_MPA, f.film_mpa, MPA.NAME";
+    private static final String FIND_POPULAR_FILMS = "SELECT " +
+            "f.film_id, film_name, film_description, film_release_date, film_duration, film_mpa AS MPA_ID, MPA.NAME AS MPA_NAME, COUNT(*)\n" +
+            "FROM films AS f\n" +
+            "JOIN MPA ON f.FILM_MPA = MPA.ID\n" +
+            "JOIN USER_LIKES AS l ON f.film_id = l.film_id\n" +
+            "GROUP BY f.film_id\n" +
+            "ORDER BY COUNT(*) desc\n" +
+            "LIMIT ?";
+    private static final String FIND_COMMON_FILM =
+            "SELECT f.film_id AS id, f.film_name AS name, f.film_description AS description, " +
+                    "f.film_release_date AS release_date, f.film_duration AS duration, f.film_mpa AS mpa_id, " +
+                    "mpa.name AS mpa_name " +
+            "FROM USER_LIKES ul " +
+            "INNER JOIN USER_LIKES fl ON fl.film_id = ul.film_id " +
+            "INNER JOIN FILMS f ON ul.film_id = f.film_id " +
+            "INNER JOIN MPA mpa ON mpa.id = f.film_mpa " +
+            "WHERE ul.user_id = ? AND fl.user_id = ?";
 
     public FilmDbRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -147,9 +160,12 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
         return findMany(FIND_POPULAR_FILMS, count);
     }
 
-
     @Override
     public List<Film> getFilmsByDirector(long directorId, SortType sortType) {
         return findMany(FIND_FILMS_FOR_DIRECTOR + " ORDER BY " + sortType.getDbFieldName(), directorId);
+
+    @Override
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        return findMany(FIND_COMMON_FILM, userId, friendId);
     }
 }

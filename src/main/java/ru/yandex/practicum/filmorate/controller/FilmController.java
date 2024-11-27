@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.SortType;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ import java.util.List;
 public class FilmController {
 
     private final FilmService filmService;
+    private final UserService userService;
 
     @GetMapping(value = "/{id}")
     public Film findFilm(@PathVariable long id) {
@@ -78,5 +80,11 @@ public class FilmController {
     public List<Film> getDFilmsForDirector(@PathVariable long directorId, @RequestParam("sortBy") SortType sortBy) {
         log.info("Запрос на получение фильмов для режиссера с id {} с сортировкой", directorId);
         return filmService.getFilmByDirector(directorId, sortBy);
+
+    @GetMapping(value = "/common")
+    public List<Film> getCommonFilms(@RequestParam long userId, @RequestParam long friendId) {
+        log.info("Запрос на получение общих филмов у пользователя {} и {}", userId, friendId);
+        return filmService.getCommonFilms(userId, friendId);
+
     }
 }
