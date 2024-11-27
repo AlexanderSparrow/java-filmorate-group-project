@@ -43,7 +43,7 @@ public class FilmService {
         return filmStorage.createFilm(newFilm);
     }
 
-    @Transactional
+   // @Transactional
     public Film updateFilm(Film newFilm) {
         final Film film = filmStorage.findFilm(newFilm.getId());
         filmValidation(newFilm);
