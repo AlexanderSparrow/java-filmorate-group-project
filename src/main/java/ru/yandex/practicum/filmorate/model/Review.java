@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.NotNull;
@@ -8,12 +9,14 @@ import jakarta.validation.constraints.NotNull;
 @Data
 @EqualsAndHashCode(of = { "reviewId" })
 public class Review {
-    long reviewId;
-    String content;
-    Boolean isPositive;
+    private long reviewId;
+    @NotBlank
+    private String content;
+    @NotBlank
+    private Boolean isPositive;
     @NotNull(message = "Не указан пользователь")
-    Long userId;
+    private Long userId;
     @NotNull(message = "Не указан фильм")
-    Long filmId;
-    int useful = 0;
+    private Long filmId;
+    private int useful = 0;
 }
