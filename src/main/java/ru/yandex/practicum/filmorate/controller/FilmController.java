@@ -58,12 +58,6 @@ public class FilmController {
         return filmService.removeLikeFromMovie(id, userId);
     }
 
-    @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
-        log.info("Получение запроса популярных фильмов");
-        return filmService.getPopularFilms(count);
-    }
-
     @GetMapping(value = "/genre/{id}")
     public List<Genre> getGenresForFilm(@PathVariable long id) {
         log.info("Запрос на получение жанров для фильма с id {}", id);
