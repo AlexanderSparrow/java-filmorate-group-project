@@ -42,13 +42,13 @@ public class FilmController {
         return filmService.updateFilm(newFilm);
     }
 
-    @PutMapping (value = "{id}/like/{userId}")
+    @PutMapping (value = "/{id}/like/{userId}")
     public Film setLikeToMovie(@PathVariable Long id, @PathVariable Long userId) {
         log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, id);
         return filmService.setLikeToMovie(id, userId);
     }
 
-    @DeleteMapping (value = "{id}/like/{userId}")
+    @DeleteMapping (value = "/{id}/like/{userId}")
     public Film removeLikeFromMovie(@PathVariable long id, @PathVariable long userId) {
         log.info("Пользователь с id {} удалил лайк фильму с id {}", userId, id);
         return filmService.removeLikeFromMovie(id, userId);
