@@ -17,7 +17,7 @@ public class ReviewDbRepository extends BaseRepository<Review> implements Review
      private static final String FIND_BY_ID = "SELECT r.*, " +
          "SUM(CASE WHEN rr.IS_LIKE = true THEN 1 WHEN rr.IS_LIKE = false THEN -1 END) AS useful " +
          "FROM " +
-         "reviews r "+
+         "reviews r " +
          "LEFT JOIN REVIEWS_REACTIONS rr ON r.ID = rr.review_ID " +
          "WHERE r.id= ? " +
          "GROUP BY r.ID, r.content, r.is_Positive, r.user_id, r.film_id";
