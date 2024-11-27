@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.List;
@@ -16,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-
+    private final FilmService filmService;
 
     @GetMapping(value = "/{id}")
     public User findUser(@PathVariable long id) {
@@ -70,6 +72,12 @@ public class UserController {
     public void deleteUser(@PathVariable long id) {
         log.info("Получен запрос на удаление пользователя {}", id);
         userService.deleteUser(id);
+    }
+  
+    @GetMapping ("/{userId}/recommendations")
+    public List<Film> getFilmRecommendations(@PathVariable long userId) {
+        log.info("Получен запрос на получение рекомендаци для пользователя {}", userId);
+        return filmService.getFilmRecommendations(userId);
     }
 }
 
