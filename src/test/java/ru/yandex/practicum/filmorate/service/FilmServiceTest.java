@@ -118,37 +118,32 @@ public class FilmServiceTest {
         Film secondFilm = new Film();
         secondFilm.setName("Second Film");
         secondFilm.setDescription("Description of the second film");
-        secondFilm.setReleaseDate(LocalDate.of(2022, 5, 1)); // Указываем год релиза
+        secondFilm.setReleaseDate(LocalDate.of(2022, 5, 1));
         secondFilm.setDuration(120L);
         secondFilm.setMpa(mpaService.findMpa(1L));
         LinkedHashSet<Genre> genres = new LinkedHashSet<>();
-        genres.add(genreService.getGenre(1L)); // Добавляем жанр с ID 1
+        genres.add(genreService.getGenre(1L));
         secondFilm.setGenres(genres);
         Film addedSecondFilm = filmService.createFilm(secondFilm);
 
-        // Добавляем лайки
-        filmService.setLikeToMovie(newFilm.getId(), user.getId()); // Лайк первому фильму
-        filmService.setLikeToMovie(addedSecondFilm.getId(), user.getId()); // Лайк второму фильму
+        filmService.setLikeToMovie(newFilm.getId(), user.getId());
+        filmService.setLikeToMovie(addedSecondFilm.getId(), user.getId());
 
-        // Тестируем получение популярных фильмов без фильтров
         List<Film> popularFilms = filmService.getPopularFilms(2, null, null);
         assertEquals(2, popularFilms.size());
-        assertEquals(newFilm.getId(), popularFilms.get(0).getId()); // Проверяем сортировку по лайкам
+        assertEquals(newFilm.getId(), popularFilms.get(0).getId());
 
-        // Тестируем получение популярных фильмов по жанру
         List<Film> popularByGenre = filmService.getPopularFilms(1, 1L, null);
         assertEquals(1, popularByGenre.size());
-        assertEquals(newFilm.getId(), popularByGenre.get(0).getId()); // Фильтруется по жанру с ID 1
+        assertEquals(newFilm.getId(), popularByGenre.get(0).getId());
 
-        // Тестируем получение популярных фильмов по году
         List<Film> popularByYear = filmService.getPopularFilms(1, null, 2022);
         assertEquals(1, popularByYear.size());
-        assertEquals(addedSecondFilm.getId(), popularByYear.get(0).getId()); // Фильтруется по году
+        assertEquals(addedSecondFilm.getId(), popularByYear.get(0).getId());
 
-        // Тестируем с обоими фильтрами
         List<Film> popularByBoth = filmService.getPopularFilms(1, 1L, 2022);
         assertEquals(1, popularByBoth.size());
-        assertEquals(addedSecondFilm.getId(), popularByBoth.get(0).getId()); // Фильтруется по жанру и году
+        assertEquals(addedSecondFilm.getId(), popularByBoth.get(0).getId());
     }
 
 
