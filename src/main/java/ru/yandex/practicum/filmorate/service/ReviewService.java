@@ -58,7 +58,7 @@ public class ReviewService {
         if (!reviewStorage.isLikeOrDislikeExists(id, userId, true)) {
                 return reviewStorage.likeReview(id, userId);
         } else {
-            throw new ValidationExceptions("Вы уже поставили Лайк");
+            throw new ValidationExceptions("Вы уже поставили лайк");
         }
     }
 
