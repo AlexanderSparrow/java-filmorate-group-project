@@ -57,14 +57,14 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("Если Логин содерджит пробел, то ошибка")
+    @DisplayName("Если Логин содержит пробел, то ошибка")
     void ifContainsSpaceLoginError() {
         user.setLogin("login login");
         assertThrows(ValidationExceptions.class, () -> userController.createUser(user));
     }
 
     @Test
-    @DisplayName("Если дата рождени позже текущей то ошибка")
+    @DisplayName("Если дата рождения позже текущей, то ошибка")
     void ifBirthdayAfterNowError() {
         user.setBirthday(LocalDate.now().plusDays(1));
         assertThrows(ValidationExceptions.class, () -> userController.createUser(user));
