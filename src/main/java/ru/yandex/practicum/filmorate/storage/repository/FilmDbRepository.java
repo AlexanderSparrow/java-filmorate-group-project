@@ -42,13 +42,6 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
             "WHERE film_id = ?";
     private static final String DELETE_GENRES = "DELETE FROM FILM_GENRES WHERE film_id = ?";
     private static final String DELETE_DIRECTOR = "DELETE FROM FILM_DIRECTORS WHERE film_id = ?";
-    private static final String FIND_POPULAR_FILMS = "SELECT f.film_id, film_name, film_description, film_release_date, " +
-            "film_duration, film_mpa AS MPA_ID, MPA.NAME AS MPA_NAME, " +
-            "COUNT(*) FROM films AS f " +
-            "JOIN MPA ON f.FILM_MPA = MPA.ID " +
-            "JOIN USER_LIKES AS l ON f.film_id = l.film_id " +
-            "GROUP BY f.film_id " +
-            "ORDER BY COUNT(*) desc LIMIT ?";
     private static final String FIND_FILMS_FOR_DIRECTOR = "SELECT f.*, f.film_mpa AS MPA_ID, " +
             "MPA.NAME AS MPA_NAME, count(ul.id) as likes " +
             "FROM FILM_DIRECTORS AS FD " +
