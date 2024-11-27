@@ -92,6 +92,7 @@ public class FilmService {
                 .stream()
                 .peek(p -> p.setDirectors(directorStorage.getDirectorsForFilm(p.getId())))
                 .toList();
+    }
 
     public List<Film> getCommonFilms(long userId, long friendId) {
         List<Film> films = filmStorage.getCommonFilms(userId, friendId);
@@ -135,6 +136,4 @@ public class FilmService {
             }
         }
     }
-
-
 }
