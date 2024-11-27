@@ -3,6 +3,8 @@ package ru.yandex.practicum.filmorate.storage.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundExceptions;
@@ -20,15 +22,15 @@ import java.util.Optional;
 @Component
 @Repository
 public class FilmDbRepository extends BaseRepository<Film> implements FilmStorage {
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    private static final String FIND_FILM_BY_ID =
-            "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
+
+    private static final String FIND_FILM_BY_ID = "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
             "f.film_release_date AS RELEASE_DATE, f.film_duration AS DURATION, f.film_mpa AS MPA_ID, " +
             "MPA.NAME AS MPA_NAME " +
             "FROM films AS f " +
             "JOIN MPA ON f.FILM_MPA = MPA.ID " +
             "WHERE f.film_id = ?";
-
     private static final String FIND_ALL_FILMS = "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
             "f.film_release_date AS RELEASE_DATE, f.film_duration AS DURATION, f.film_mpa AS MPA_ID, " +
             "MPA.NAME AS MPA_NAME " +
@@ -43,6 +45,18 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
             "film_name = ?, film_description = ?, film_release_date = ?, film_duration = ?, film_mpa = ? \n" +
             "WHERE film_id = ?";
     private static final String DELETE_GENRES = "DELETE FROM FILM_GENRES WHERE film_id = ?";
+    private static final String FIND_POPULAR_FILMS_WITH_FILTERS =
+            "SELECT f.film_id, film_name, film_description, film_release_date, film_duration, " +
+                    "f.film_mpa AS MPA_ID, MPA.NAME AS MPA_NAME, COUNT(l.user_id) AS likes_count " +
+                    "FROM films AS f " +
+                    "LEFT JOIN MPA ON f.FILM_MPA = MPA.ID " +
+                    "LEFT JOIN USER_LIKES AS l ON f.film_id = l.film_id " +
+                    "LEFT JOIN FILM_GENRES AS fg ON f.film_id = fg.film_id " +
+                    "WHERE (:genreId IS NULL OR fg.genre_id = :genreId) " +
+                    "AND (:year IS NULL OR EXTRACT(YEAR FROM f.film_release_date) = :year) " +
+                    "GROUP BY f.film_id, MPA.NAME " +
+                    "ORDER BY likes_count DESC " +
+                    "LIMIT :limit";
     private static final String DELETE_DIRECTOR = "DELETE FROM FILM_DIRECTORS WHERE film_id = ?";
     private static final String FIND_FILMS_FOR_DIRECTOR = "SELECT f.*, f.film_mpa AS MPA_ID, " +
             "MPA.NAME AS MPA_NAME, count(ul.id) as likes " +
@@ -96,8 +110,9 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
                 "WHERE ul2.user_id <> ? AND ul2.film_id = ANY(?) " +
                 "GROUP BY ul2.user_id ORDER BY COUNT(*) DESC LIMIT 1)";
 
-    public FilmDbRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
+    public FilmDbRepository(JdbcTemplate jdbc, RowMapper<Film> mapper, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(jdbc, mapper);
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     @Override
@@ -117,13 +132,7 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
 
     @Override
     public Film createFilm(Film film) {
-        long id = insert(CREATE_FILM,
-                film.getName(),
-                film.getDescription(),
-                film.getReleaseDate(),
-                film.getDuration(),
-                film.getMpa().getId()
-        );
+        long id = insert(CREATE_FILM, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
         film.setId(id);
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             for (Genre genre : film.getGenres()) {
@@ -151,14 +160,7 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
 
     @Override
     public Film updateFilm(Film film) {
-        update(UPDATE_FILM,
-                film.getName(),
-                film.getDescription(),
-                film.getReleaseDate(),
-                film.getDuration(),
-                film.getMpa().getId(),
-                film.getId()
-        );
+        update(UPDATE_FILM, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId(), film.getId());
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             delete(DELETE_GENRES, film.getId());
             for (Genre genre : film.getGenres()) {
@@ -177,6 +179,16 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
     }
 
     @Override
+    public List<Film> getPopularFilms(int count, Long genreId, Integer year) {
+        String sql = FIND_POPULAR_FILMS_WITH_FILTERS;
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("limit", count);
+        parameters.addValue("genreId", genreId);
+        parameters.addValue("year", year);
+
+        return namedParameterJdbcTemplate.query(sql, parameters, mapper);
+    }
+
     public void deleteFilm(long id) {
         delete(DELETE_GENRES, id);
         delete(DELETE_FILM, id);
