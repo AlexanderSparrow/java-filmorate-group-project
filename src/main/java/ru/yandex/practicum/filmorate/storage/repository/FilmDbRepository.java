@@ -28,6 +28,7 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
             "FROM films AS f " +
             "JOIN MPA ON f.FILM_MPA = MPA.ID " +
             "WHERE f.film_id = ?";
+
     private static final String FIND_ALL_FILMS = "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
             "f.film_release_date AS RELEASE_DATE, f.film_duration AS DURATION, f.film_mpa AS MPA_ID, " +
             "MPA.NAME AS MPA_NAME " +
@@ -59,6 +60,7 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
             "GROUP BY f.film_id\n" +
             "ORDER BY COUNT(*) desc\n" +
             "LIMIT ?";
+    private static final String DELETE_FILM = "DELETE FROM films WHERE film_id = ?";
     private static final String FIND_COMMON_FILM =
             "SELECT f.film_id AS id, f.film_name AS name, f.film_description AS description, " +
                     "f.film_release_date AS release_date, f.film_duration AS duration, f.film_mpa AS mpa_id, " +
@@ -69,34 +71,30 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
             "INNER JOIN MPA mpa ON mpa.id = f.film_mpa " +
             "WHERE ul.user_id = ? AND fl.user_id = ?";
     private static final String FIND_FAVORITE_MOVIES =
-            """
-             SELECT
-                f.film_id AS id, f.film_name AS name,
-                f.film_description AS description,
-                f.film_release_date AS release_date,
-                f.film_duration AS duration,
-                f.film_mpa AS mpa_id, mpa.name AS mpa_name
-             FROM USER_LIKES ul
-             INNER JOIN FILMS f ON ul.film_id = f.film_id
-             INNER JOIN MPA mpa ON mpa.id = f.film_mpa
-             WHERE ul.user_id = ?
-            """;
+            "SELECT " +
+                "f.film_id AS id, f.film_name AS name, " +
+                "f.film_description AS description, " +
+                "f.film_release_date AS release_date, " +
+                "f.film_duration AS duration, " +
+                "f.film_mpa AS mpa_id, mpa.name AS mpa_name " +
+             "FROM USER_LIKES ul " +
+             "INNER JOIN FILMS f ON ul.film_id = f.film_id " +
+             "INNER JOIN MPA mpa ON mpa.id = f.film_mpa " +
+             "WHERE ul.user_id = ?";
     private static final String GET_FILM_RECOMMENDATIONS =
-            """
-             SELECT
-                f.film_id AS id, f.film_name AS name,
-                f.film_description AS description,
-                f.film_release_date AS release_date,
-                f.film_duration AS duration,
-                f.film_mpa AS mpa_id, mpa.name AS mpa_name
-             FROM USER_LIKES ul
-             INNER JOIN FILMS f ON ul.film_id = f.film_id
-             INNER JOIN MPA mpa ON mpa.id = f.film_mpa
-             WHERE ul.user_id IN
-                (SELECT ul2.user_id FROM USER_LIKES ul2
-                WHERE ul2.user_id <> ? AND ul2.film_id = ANY(?)
-                GROUP BY ul2.user_id ORDER BY COUNT(*) DESC LIMIT 1)
-            """;
+            "SELECT " +
+                "f.film_id AS id, f.film_name AS name, " +
+                "f.film_description AS description, " +
+                "f.film_release_date AS release_date, " +
+                "f.film_duration AS duration, " +
+                "f.film_mpa AS mpa_id, mpa.name AS mpa_name " +
+             "FROM USER_LIKES ul " +
+             "INNER JOIN FILMS f ON ul.film_id = f.film_id " +
+             "INNER JOIN MPA mpa ON mpa.id = f.film_mpa " +
+             "WHERE ul.user_id IN " +
+                "(SELECT ul2.user_id FROM USER_LIKES ul2 " +
+                "WHERE ul2.user_id <> ? AND ul2.film_id = ANY(?) " +
+                "GROUP BY ul2.user_id ORDER BY COUNT(*) DESC LIMIT 1)";
 
     public FilmDbRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -176,6 +174,12 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
         }
 
         return film;
+    }
+
+    @Override
+    public void deleteFilm(long id) {
+        delete(DELETE_GENRES, id);
+        delete(DELETE_FILM, id);
     }
 
     @Override
