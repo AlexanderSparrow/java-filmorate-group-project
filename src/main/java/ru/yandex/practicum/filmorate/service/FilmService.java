@@ -84,7 +84,6 @@ public class FilmService {
         return genreStorage.getGenresForFilm(filmId);
     }
 
-
     public List<Director> getDirectorsForFilm(long filmId) {
         return directorStorage.getDirectorsForFilm(filmId);
     }
