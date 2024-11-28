@@ -59,14 +59,8 @@ public class FilmController {
     }
 
     @GetMapping("/search")
-    public List<Film> search(@RequestParam String query, @RequestParam String params) {
-        return filmService.searchFilms(query, params);
-    }
-
-    @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
-        log.info("Получение pапроса популярных фильмов");
-        return filmService.getPopularFilms(count);
+    public List<Film> search(@RequestParam String query, @RequestParam String... by) {
+        return filmService.searchFilms(query, by);
     }
 
     @GetMapping(value = "/genre/{id}")

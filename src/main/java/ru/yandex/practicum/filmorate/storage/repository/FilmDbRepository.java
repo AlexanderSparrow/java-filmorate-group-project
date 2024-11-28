@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.repository;
 
-import org.apache.commons.lang3.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -18,13 +17,12 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 @Repository
 public class FilmDbRepository extends BaseRepository<Film> implements FilmStorage {
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private static final String FIND_FILM_BY_ID =
             "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
@@ -33,7 +31,7 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
             "FROM films AS f " +
             "JOIN MPA ON f.FILM_MPA = MPA.ID " +
             "WHERE f.film_id = ?";
-    private static final String FIND_ALL_FILMS =             "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
+    private static final String FIND_ALL_FILMS = "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
             "f.film_release_date AS RELEASE_DATE, f.film_duration AS DURATION, f.film_mpa AS MPA_ID, " +
             "MPA.NAME AS MPA_NAME " +
             "FROM films AS f " +
@@ -167,18 +165,6 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
     }
 
     @Override
-    public List<Film> searchFilms(String query, String params) {
-        List<Film> films = findMany(FIND_ALL_FILMS);
-        if (params.equals("title")) {
-            films = films.stream()
-                    .filter(film -> StringUtils.containsIgnoreCase(film.getName(), (query)))
-                    .collect(Collectors.toList());
-        }
-        System.out.println(films.toString());
-        return films;
-    }
-
-    @Override
     public Film updateFilm(Film film) {
         update(UPDATE_FILM,
                 film.getName(),
@@ -219,11 +205,6 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
     public void deleteFilm(long id) {
         delete(DELETE_GENRES, id);
         delete(DELETE_FILM, id);
-    }
-
-    @Override
-    public List<Film> getPopularFilms(int count) {
-        return findMany(FIND_POPULAR_FILMS, count);
     }
 
     @Override

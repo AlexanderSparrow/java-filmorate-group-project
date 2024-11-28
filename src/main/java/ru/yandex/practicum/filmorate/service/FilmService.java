@@ -2,8 +2,8 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.*;
@@ -45,11 +45,34 @@ public class FilmService {
         return filmStorage.createFilm(newFilm);
     }
 
-    public List<Film> searchFilms(String query, String params) {
-        if (query == null || query.isBlank()) {
-            throw new ValidationExceptions("Ключевое слово не может быть пустым");
+    public List<Film> searchFilms(String query, String... by) {
+        List<Film> films = findAllFilms();
+        List<String> str = List.of(by);
+        System.out.println(str);
+        if (str.size() == 2 && str.contains("title") && str.contains("director")) {
+            System.out.println(1);
+            films = films.stream()
+                    .filter(film -> StringUtils.containsIgnoreCase(film.getName(), (query)) ||
+                            StringUtils.containsIgnoreCase(film.getDirectors().stream()
+                                    .map(director -> director.getName())
+                                    .map(Object::toString)
+                                    .collect(Collectors.joining(", ")), query))
+                    .collect(Collectors.toList());
+        } else if (str.contains("title")) {
+            System.out.println(2);
+            films = films.stream()
+                    .filter(film -> StringUtils.containsIgnoreCase(film.getName(), (query)))
+                    .collect(Collectors.toList());
+        } else if (str.contains("director")) {
+            System.out.println(3);
+            films = films.stream()
+                    .filter(film -> StringUtils.containsIgnoreCase(film.getDirectors().stream()
+                            .map(director -> director.getName())
+                            .map(Object::toString)
+                            .collect(Collectors.joining(", ")), query))
+                    .collect(Collectors.toList());
         }
-        return filmStorage.searchFilms(query, params);
+        return films;
     }
 
     public Film updateFilm(Film newFilm) {
