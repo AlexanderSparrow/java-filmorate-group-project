@@ -20,6 +20,8 @@ public interface FilmStorage {
 
     List<Film> getPopularFilms(int count, Long genreId, Integer year);
 
+    List<Film> getPopularFilms(int count);
+
     void deleteFilm(long id);
 
     List<Film> getFilmsByDirector(long directorId, SortType sortType);

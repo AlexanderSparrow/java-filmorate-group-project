@@ -22,7 +22,7 @@ import java.util.Optional;
 @Component
 @Repository
 public class FilmDbRepository extends BaseRepository<Film> implements FilmStorage {
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private static final String FIND_FILM_BY_ID =
             "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
@@ -110,7 +110,7 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
                 "WHERE ul2.user_id <> ? AND ul2.film_id = ANY(?) " +
                 "GROUP BY ul2.user_id ORDER BY COUNT(*) DESC LIMIT 1)";
 
-    public FilmDbRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
+    public FilmDbRepository(JdbcTemplate jdbc, RowMapper<Film> mapper, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(jdbc, mapper);
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
@@ -200,6 +200,11 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
         parameters.addValue("year", year);
 
         return namedParameterJdbcTemplate.query(sql, parameters, mapper);
+    }
+
+    @Override
+    public List<Film> getPopularFilms(int count) {
+        return findMany(FIND_POPULAR_FILMS, count);
     }
 
     public void deleteFilm(long id) {
