@@ -2,18 +2,22 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,22 +30,55 @@ public class FilmService {
     private final LikeStorage likeStorage;
     private final UserStorage userStorage;
     private final EventService eventService;
+    private final DirectorStorage directorStorage;
 
     public Film findFilm(Long id) {
         Film film = filmStorage.findFilm(id);
         film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(id)));
+        film.setDirectors(directorStorage.getDirectorsForFilm(id));
         return film;
     }
 
     public List<Film> findAllFilms() {
         List<Film> films = filmStorage.findAllFilms();
         films.forEach(film -> film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId()))));
+        films.forEach(film -> film.setDirectors(directorStorage.getDirectorsForFilm(film.getId())));
         return films;
     }
 
     public Film createFilm(Film newFilm) {
         filmValidation(newFilm);
         return filmStorage.createFilm(newFilm);
+    }
+
+    public List<Film> searchFilms(String query, String... by) {
+        List<Film> films = findAllFilms();
+        List<String> str = List.of(by);
+        System.out.println(str);
+        if (str.size() == 2 && str.contains("title") && str.contains("director")) {
+            System.out.println(1);
+            films = films.stream()
+                    .filter(film -> StringUtils.containsIgnoreCase(film.getName(), (query)) ||
+                            StringUtils.containsIgnoreCase(film.getDirectors().stream()
+                                    .map(director -> director.getName())
+                                    .map(Object::toString)
+                                    .collect(Collectors.joining(", ")), query))
+                    .collect(Collectors.toList());
+        } else if (str.contains("title")) {
+            System.out.println(2);
+            films = films.stream()
+                    .filter(film -> StringUtils.containsIgnoreCase(film.getName(), (query)))
+                    .collect(Collectors.toList());
+        } else if (str.contains("director")) {
+            System.out.println(3);
+            films = films.stream()
+                    .filter(film -> StringUtils.containsIgnoreCase(film.getDirectors().stream()
+                            .map(director -> director.getName())
+                            .map(Object::toString)
+                            .collect(Collectors.joining(", ")), query))
+                    .collect(Collectors.toList());
+        }
+        return films;
     }
 
     public Film updateFilm(Film newFilm) {
@@ -55,8 +92,14 @@ public class FilmService {
         film.setDuration(newFilm.getDuration());
         film.setMpa(mpa);
         film.setGenres(genres);
+        film.setDirectors(newFilm.getDirectors());
         filmStorage.updateFilm(film);
         return film;
+    }
+
+    public void deleteFilm(long id) {
+        filmStorage.findFilm(id);
+        filmStorage.deleteFilm(id);
     }
 
     public Film setLikeToMovie(long filmId, long userId) {
@@ -79,6 +122,7 @@ public class FilmService {
     public Film removeLikeFromMovie(long filmId, long userId) {
         filmStorage.findFilm(filmId);
         userStorage.findUser(userId);
+        likeStorage.removeLikeFromMovie(userId, filmId);
         likeStorage.removeLikeFromMovie(filmId, userId);
 
         Event event = new Event();
@@ -93,14 +137,56 @@ public class FilmService {
         return filmStorage.findFilm(filmId);
     }
 
-    public List<Film> getPopularFilms(int count) {
-        List<Film> films = filmStorage.getPopularFilms(count);
+    public List<Film> getPopularFilms(int count, Long genreId, Integer year) {
+        List<Film> films = filmStorage.getPopularFilms(count, genreId, year);
         films.forEach(film -> film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId()))));
         return films;
     }
 
     public List<Genre> getGenresForFilm(long filmId) {
         return genreStorage.getGenresForFilm(filmId);
+    }
+
+    public List<Director> getDirectorsForFilm(long filmId) {
+        return directorStorage.getDirectorsForFilm(filmId);
+    }
+
+    public List<Film> getFilmByDirector(long directorId, SortType sortType) {
+        return filmStorage.getFilmsByDirector(directorId, sortType)
+                .stream()
+                .peek(p -> p.setDirectors(directorStorage.getDirectorsForFilm(p.getId())))
+                .toList();
+    }
+
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        List<Film> films = filmStorage.getCommonFilms(userId, friendId);
+        films.forEach(film -> film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId()))));
+        return films;
+    }
+
+    public List<Film> getFilmRecommendations(long userId) {
+        List<Film> favoriteMovies = filmStorage.getFavoriteMovies(userId);
+
+        if (favoriteMovies.isEmpty())
+            return new ArrayList<>();
+
+        List<Film> filmIntersections = filmStorage
+                .findFilmIntersections(userId, favoriteMovies.stream().map(Film::getId).collect(Collectors.toList()));
+
+        if (filmIntersections.isEmpty())
+            return new ArrayList<>();
+
+        List<Film> recommendedFilms = new ArrayList<>();
+
+        for (Film film : filmIntersections) {
+            boolean shouldRecommended = favoriteMovies.stream().noneMatch(f -> f.getId().equals(film.getId()));
+
+            if (shouldRecommended) {
+                recommendedFilms.add(film);
+            }
+        }
+
+        return recommendedFilms;
     }
 
     private void filmValidation(Film newFilm) {

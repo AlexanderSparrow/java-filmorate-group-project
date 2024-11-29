@@ -23,6 +23,7 @@ public class UserDbRepository extends BaseRepository<User> implements UserStorag
     private static final String FIND_USER_BY_ID = "SELECT * FROM users WHERE user_id = ?";
     private static final String INSERT_USER = "INSERT INTO users(user_email, user_login, user_name, user_birthday) VALUES(?, ?, ?, ?)";
     private static final String UPDATE_USER = "UPDATE users SET user_email = ?, user_login = ?, user_name = ?, user_birthday = ? WHERE user_id = ?";
+    private static final String DELETE_USER_BY_ID = "DELETE FROM users WHERE user_id = ?";
 
     public UserDbRepository(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);
@@ -59,5 +60,9 @@ public class UserDbRepository extends BaseRepository<User> implements UserStorag
                 user.getBirthday(),
                 user.getId());
         return user;
+    }
+
+    public void deleteUser(long userId) {
+        delete(DELETE_USER_BY_ID, userId);
     }
 }
