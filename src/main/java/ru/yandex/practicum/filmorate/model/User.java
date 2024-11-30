@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Data
 @EqualsAndHashCode(of = { "id" })
 public class User {
-    private long id;
+    private Long id;
     @Email(message = "Введите электронную почту в корректном формете")
     private String email;
     @NotBlank(message = "Логин не может быть пустым")

@@ -6,6 +6,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(of = {"id"})
 public class Director {
-    private long id;
+    private Long id;
     private String name;
 }
