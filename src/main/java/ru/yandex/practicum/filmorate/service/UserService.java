@@ -5,13 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.EventStorage;
 import ru.yandex.practicum.filmorate.storage.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.model.Event;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -36,14 +35,14 @@ public class UserService {
 
         User user1 = userStorage.createUser(user);
 
-        Event event = new Event();
-        event.setUserId(user.getId());
-        event.setEventType("USER");
-        event.setOperation("ADD");
-        event.setEntityId(user.getId());
-        event.setTimeCreate(LocalDateTime.now());
-
-        eventService.addEvent(event);
+//        Event event = new Event();
+//        event.setUserId(user.getId());
+//        event.setEventType("FRIEND");
+//        event.setOperation("ADD");
+//        event.setEntityId(user1.getId());
+//        event.setTimeCreate(Instant.now().toEpochMilli());
+//
+//        eventService.addEvent(event);
 
         return user1;
     }
@@ -52,14 +51,14 @@ public class UserService {
         userValidation(user);
         userStorage.findUser(user.getId());
 
-        Event event = new Event();
-        event.setUserId(user.getId());
-        event.setEventType("USER");
-        event.setOperation("UPDATE");
-        event.setEntityId(user.getId());
-        event.setTimeCreate(LocalDateTime.now());
-
-        eventService.addEvent(event);
+//        Event event = new Event();
+//        event.setUserId(user.getId());
+//        event.setEventType("USER");
+//        event.setOperation("UPDATE");
+//        event.setEntityId(user.getId());
+//        event.setTimeCreate(Instant.now().toEpochMilli());
+//
+//        eventService.addEvent(event);
 
         return userStorage.updateUser(user);
     }
@@ -83,7 +82,7 @@ public class UserService {
         event.setEventType("FRIEND");
         event.setOperation("ADD");
         event.setEntityId(friendId);
-        event.setTimeCreate(LocalDateTime.now());
+        event.setTimestamp(Instant.now().toEpochMilli());
 
         eventService.addEvent(event);
 
@@ -104,7 +103,7 @@ public class UserService {
         event.setEventType("FRIEND");
         event.setOperation("REMOVE");
         event.setEntityId(friendId);
-        event.setTimeCreate(LocalDateTime.now());
+        event.setTimestamp(Instant.now().toEpochMilli());
 
         eventService.addEvent(event);
 

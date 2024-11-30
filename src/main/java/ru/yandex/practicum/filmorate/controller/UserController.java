@@ -42,7 +42,6 @@ public class UserController {
     }
 
 
-    @GetMapping (value = "/{id}/friends")
     @GetMapping(value = "/{id}/friends")
     public List<User> getFriends(@PathVariable long id) {
         log.info("Получен запрос на получение друзей пользователя " + id);

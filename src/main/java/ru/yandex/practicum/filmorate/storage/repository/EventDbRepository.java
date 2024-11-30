@@ -32,7 +32,7 @@ public class EventDbRepository extends BaseRepository<Event> implements EventSto
                 event.getEventType(),
                 event.getOperation(),
                 event.getEntityId(),
-                event.getTimeCreate()
+                event.getTimestamp()
         );
         event.setId(id);
         return event;

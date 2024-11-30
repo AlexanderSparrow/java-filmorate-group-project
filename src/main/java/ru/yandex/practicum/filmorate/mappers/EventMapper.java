@@ -23,7 +23,7 @@ public class EventMapper implements RowMapper<Event> {
         event.setEventType(rs.getString("EVENT_TYPE"));
         event.setOperation(rs.getString("OPERATION"));
         event.setEntityId(rs.getLong("ENTITY_ID"));
-        event.setTimeCreate(rs.getObject("TIME_CREATE", LocalDateTime.class));
+        event.setTimestamp(rs.getLong("TIME_CREATE"));
         return event;
     }
 }

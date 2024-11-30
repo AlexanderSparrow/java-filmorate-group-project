@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.Event;
@@ -12,9 +11,9 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,32 +51,9 @@ public class FilmService {
     }
 
     public List<Film> searchFilms(String query, String... by) {
-        List<Film> films = findAllFilms();
-        List<String> str = List.of(by);
-        System.out.println(str);
-        if (str.size() == 2 && str.contains("title") && str.contains("director")) {
-            System.out.println(1);
-            films = films.stream()
-                    .filter(film -> StringUtils.containsIgnoreCase(film.getName(), (query)) ||
-                            StringUtils.containsIgnoreCase(film.getDirectors().stream()
-                                    .map(director -> director.getName())
-                                    .map(Object::toString)
-                                    .collect(Collectors.joining(", ")), query))
-                    .collect(Collectors.toList());
-        } else if (str.contains("title")) {
-            System.out.println(2);
-            films = films.stream()
-                    .filter(film -> StringUtils.containsIgnoreCase(film.getName(), (query)))
-                    .collect(Collectors.toList());
-        } else if (str.contains("director")) {
-            System.out.println(3);
-            films = films.stream()
-                    .filter(film -> StringUtils.containsIgnoreCase(film.getDirectors().stream()
-                            .map(director -> director.getName())
-                            .map(Object::toString)
-                            .collect(Collectors.joining(", ")), query))
-                    .collect(Collectors.toList());
-        }
+        List<Film> films = filmStorage.searchFilms(query, by);
+        films.forEach(film -> film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId()))));
+        films.forEach(film -> film.setDirectors(directorStorage.getDirectorsForFilm(film.getId())));
         return films;
     }
 
@@ -112,7 +88,7 @@ public class FilmService {
         event.setEventType("LIKE");
         event.setOperation("ADD");
         event.setEntityId(filmId);
-        event.setTimeCreate(LocalDateTime.now());
+        event.setTimestamp(Instant.now().toEpochMilli());
 
         eventService.addEvent(event);
 
@@ -130,7 +106,7 @@ public class FilmService {
         event.setEventType("LIKE");
         event.setOperation("REMOVE");
         event.setEntityId(filmId);
-        event.setTimeCreate(LocalDateTime.now());
+        event.setTimestamp(Instant.now().toEpochMilli());
 
         eventService.addEvent(event);
 
