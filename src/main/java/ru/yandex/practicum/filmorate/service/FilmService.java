@@ -61,13 +61,18 @@ public class FilmService {
         final Film film = filmStorage.findFilm(newFilm.getId());
         filmValidation(newFilm);
         final Mpa mpa = mpaStorage.findMpa(newFilm.getMpa().getId());
-        final LinkedHashSet<Genre> genres = new LinkedHashSet<>(genreStorage.getGenresForFilm(newFilm.getId()));
+        for (Genre genre : newFilm.getGenres()) {
+            genreStorage.getGenre(genre.getId());
+        }
+        for (Director director : newFilm.getDirectors()) {
+            directorStorage.getDirector(director.getId());
+        }
         film.setName(newFilm.getName());
         film.setDescription(newFilm.getDescription());
         film.setReleaseDate(newFilm.getReleaseDate());
         film.setDuration(newFilm.getDuration());
-        film.setMpa(mpa);
-        film.setGenres(genres);
+        film.setMpa(newFilm.getMpa());
+        film.setGenres(newFilm.getGenres());
         film.setDirectors(newFilm.getDirectors());
         filmStorage.updateFilm(film);
         return film;

@@ -19,4 +19,12 @@ public class User {
     private String name;
     @Past(message = "Дата рождения не может быть позже текущего дня")
     private LocalDate birthday;
+
+    public String getName() {
+        if (name.isEmpty()) {
+            return login;
+        } else {
+            return name;
+        }
+    }
 }
