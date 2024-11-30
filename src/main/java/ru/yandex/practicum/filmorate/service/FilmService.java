@@ -44,6 +44,13 @@ public class FilmService {
         return filmStorage.createFilm(newFilm);
     }
 
+    public List<Film> searchFilms(String query, String... by) {
+        List<Film> films = filmStorage.searchFilms(query, by);
+        films.forEach(film -> film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId()))));
+        films.forEach(film -> film.setDirectors(directorStorage.getDirectorsForFilm(film.getId())));
+        return films;
+    }
+
     public Film updateFilm(Film newFilm) {
         final Film film = filmStorage.findFilm(newFilm.getId());
         filmValidation(newFilm);

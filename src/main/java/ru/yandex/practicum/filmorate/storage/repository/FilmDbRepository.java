@@ -24,8 +24,8 @@ import java.util.Optional;
 public class FilmDbRepository extends BaseRepository<Film> implements FilmStorage {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-
-    private static final String FIND_FILM_BY_ID = "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
+    private static final String FIND_FILM_BY_ID =
+            "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
             "f.film_release_date AS RELEASE_DATE, f.film_duration AS DURATION, f.film_mpa AS MPA_ID, " +
             "MPA.NAME AS MPA_NAME " +
             "FROM films AS f " +
@@ -36,6 +36,32 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
             "MPA.NAME AS MPA_NAME " +
             "FROM films AS f " +
             "JOIN MPA ON f.FILM_MPA = MPA.ID ";
+
+    private static final String FIND_KEYWORD_TITLE = "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
+            "f.film_release_date AS RELEASE_DATE, f.film_duration AS DURATION, f.film_mpa AS MPA_ID, " +
+            "MPA.NAME AS MPA_NAME " +
+            "FROM films AS f " +
+            "JOIN MPA ON f.FILM_MPA = MPA.ID " +
+            "WHERE LOWER(FILM_NAME) LIKE LOWER(?) ";
+
+    private static final String FIND_KEYWORD_DIRECTOR = "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
+            "f.film_release_date AS RELEASE_DATE, f.film_duration AS DURATION, f.film_mpa AS MPA_ID, " +
+            "MPA.NAME AS MPA_NAME, d.name " +
+            "FROM films AS f " +
+            "JOIN MPA ON f.FILM_MPA = MPA.ID " +
+            "LEFT JOIN FILM_DIRECTORS AS fd ON f.film_id = fd.film_id " +
+            "LEFT JOIN DIRECTORS AS d ON fd.director_id = d.id " +
+            "WHERE LOWER(d.name) LIKE LOWER(?) ";
+
+    private static final String FIND_KEYWORD_DIRECTOR_TITLE = "SELECT f.film_id AS ID, f.film_name AS NAME, f.film_description AS DESCRIPTION, " +
+            "f.film_release_date AS RELEASE_DATE, f.film_duration AS DURATION, f.film_mpa AS MPA_ID, " +
+            "MPA.NAME AS MPA_NAME, d.name " +
+            "FROM films AS f " +
+            "JOIN MPA ON f.FILM_MPA = MPA.ID " +
+            "LEFT JOIN FILM_DIRECTORS AS fd ON f.film_id = fd.film_id " +
+            "LEFT JOIN DIRECTORS AS d ON fd.director_id = d.id " +
+            "WHERE LOWER(d.name) LIKE LOWER(?) OR LOWER(f.film_name) LIKE LOWER(?) ";
+
     private static final String CREATE_FILM = "INSERT INTO films " +
             "(film_name, film_description, film_release_date, film_duration, film_mpa) " +
             "VALUES(?, ?, ?, ?, ?)";
@@ -132,7 +158,13 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
 
     @Override
     public Film createFilm(Film film) {
-        long id = insert(CREATE_FILM, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
+        long id = insert(CREATE_FILM,
+                film.getName(),
+                film.getDescription(),
+                film.getReleaseDate(),
+                film.getDuration(),
+                film.getMpa().getId()
+        );
         film.setId(id);
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             for (Genre genre : film.getGenres()) {
@@ -159,8 +191,29 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
     }
 
     @Override
+    public List<Film> searchFilms(String query, String... by) {
+        List<String> str = List.of(by);
+        String likePattern = "%" + query + "%";
+        if (str.size() == 2 && str.contains("title") && str.contains("director")) {
+            return findMany(FIND_KEYWORD_DIRECTOR_TITLE, likePattern, likePattern);
+        } else if (str.contains("title")) {
+            return findMany(FIND_KEYWORD_TITLE, likePattern);
+        } else if (str.contains("director")) {
+            return findMany(FIND_KEYWORD_DIRECTOR, likePattern);
+        }
+        return null;
+    }
+
+        @Override
     public Film updateFilm(Film film) {
-        update(UPDATE_FILM, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId(), film.getId());
+        update(UPDATE_FILM,
+                film.getName(),
+                film.getDescription(),
+                film.getReleaseDate(),
+                film.getDuration(),
+                film.getMpa().getId(),
+                film.getId()
+        );
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             delete(DELETE_GENRES, film.getId());
             for (Genre genre : film.getGenres()) {
@@ -189,14 +242,14 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
         return namedParameterJdbcTemplate.query(sql, parameters, mapper);
     }
 
-    public void deleteFilm(long id) {
-        delete(DELETE_GENRES, id);
-        delete(DELETE_FILM, id);
-    }
-
     @Override
     public List<Film> getPopularFilms(int count) {
         return findMany(FIND_POPULAR_FILMS, count);
+    }
+
+    public void deleteFilm(long id) {
+        delete(DELETE_GENRES, id);
+        delete(DELETE_FILM, id);
     }
 
     @Override
