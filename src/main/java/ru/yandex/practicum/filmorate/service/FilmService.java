@@ -74,9 +74,7 @@ public class FilmService {
         film.setMpa(newFilm.getMpa());
         film.setGenres(newFilm.getGenres());
         film.setDirectors(newFilm.getDirectors());
-        System.out.println("В базу передается пустой жанр?                 " + film);
-        filmStorage.updateFilm(film);
-        return filmStorage.findFilm(newFilm.getId());
+        return filmStorage.updateFilm(film);
     }
 
     public void deleteFilm(long id) {

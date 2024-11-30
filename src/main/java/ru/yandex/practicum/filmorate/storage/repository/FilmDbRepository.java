@@ -168,16 +168,12 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
                 film.getMpa().getId()
         );
         film.setId(id);
-        if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             for (Genre genre : film.getGenres()) {
                 insert(INSERT_GENRES, film.getId(), genre.getId());
             }
-        }
-        if (film.getDirectors() != null && !film.getDirectors().isEmpty()) {
             for (Director director : film.getDirectors()) {
                 insert(INSERT_DIRECTOR, film.getId(), director.getId());
             }
-        }
         return film;
     }
 
@@ -205,18 +201,14 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
                 film.getMpa().getId(),
                 film.getId()
         );
-        if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             delete(DELETE_GENRES, film.getId());
             for (Genre genre : film.getGenres()) {
                 insert(INSERT_GENRES, film.getId(), genre.getId());
             }
-        }
-        if (film.getDirectors() != null && !film.getDirectors().isEmpty()) {
             delete(DELETE_DIRECTOR, film.getId());
             for (Director director : film.getDirectors()) {
                 insert(INSERT_DIRECTOR, film.getId(), director.getId());
             }
-        }
         return film;
     }
 
