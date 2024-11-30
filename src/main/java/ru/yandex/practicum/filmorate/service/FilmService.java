@@ -60,7 +60,7 @@ public class FilmService {
     public Film updateFilm(Film newFilm) {
         final Film film = filmStorage.findFilm(newFilm.getId());
         filmValidation(newFilm);
-        final Mpa mpa = mpaStorage.findMpa(newFilm.getMpa().getId());
+        mpaStorage.findMpa(newFilm.getMpa().getId());
         for (Genre genre : newFilm.getGenres()) {
             genreStorage.getGenre(genre.getId());
         }
@@ -74,8 +74,9 @@ public class FilmService {
         film.setMpa(newFilm.getMpa());
         film.setGenres(newFilm.getGenres());
         film.setDirectors(newFilm.getDirectors());
+        System.out.println("В базу передается пустой жанр?                 " + film);
         filmStorage.updateFilm(film);
-        return film;
+        return filmStorage.findFilm(newFilm.getId());
     }
 
     public void deleteFilm(long id) {
