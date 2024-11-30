@@ -44,7 +44,6 @@ public class DirectorController {
         directorService.delete(id);
     }
 
-
     @PutMapping
     public Director update(@Valid @RequestBody Director director) {
         log.info("Получен запрос на обновление режиссера {}.", director.getName());

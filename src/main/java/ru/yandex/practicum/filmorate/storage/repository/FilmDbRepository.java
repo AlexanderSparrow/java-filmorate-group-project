@@ -227,7 +227,6 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
                 insert(INSERT_DIRECTOR, film.getId(), director.getId());
             }
         }
-
         return film;
     }
 
@@ -238,7 +237,6 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
         parameters.addValue("limit", count);
         parameters.addValue("genreId", genreId);
         parameters.addValue("year", year);
-
         return namedParameterJdbcTemplate.query(sql, parameters, mapper);
     }
 
