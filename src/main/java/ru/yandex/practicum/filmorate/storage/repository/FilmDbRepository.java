@@ -195,13 +195,10 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
         List<String> str = List.of(by);
         String likePattern = "%" + query + "%";
         if (str.size() == 2 && str.contains("title") && str.contains("director")) {
-            System.out.println(1);
             return findMany(FIND_KEYWORD_DIRECTOR_TITLE, likePattern, likePattern);
         } else if (str.contains("title")) {
-            System.out.println(2);
             return findMany(FIND_KEYWORD_TITLE, likePattern);
         } else if (str.contains("director")) {
-            System.out.println(3);
             return findMany(FIND_KEYWORD_DIRECTOR, likePattern);
         }
         return null;
