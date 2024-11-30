@@ -5,8 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -19,6 +21,8 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final FilmService filmService;
+    private final EventService eventService;
+
 
     @GetMapping(value = "/{id}")
     public User findUser(@PathVariable long id) {
@@ -31,6 +35,12 @@ public class UserController {
         log.info("Получен запрос на получение всех пользователей");
         return userService.findAllUsers();
     }
+
+    @GetMapping("/{userId}/feed")
+    public List<Event> getUserEvents(@PathVariable Long userId) {
+        return eventService.getUserEvents(userId);
+    }
+
 
     @GetMapping(value = "/{id}/friends")
     public List<User> getFriends(@PathVariable long id) {

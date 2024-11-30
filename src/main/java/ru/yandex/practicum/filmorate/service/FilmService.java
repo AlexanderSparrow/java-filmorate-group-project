@@ -4,9 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -23,6 +28,7 @@ public class FilmService {
     private final GenreStorage genreStorage;
     private final LikeStorage likeStorage;
     private final UserStorage userStorage;
+    private final EventService eventService;
     private final DirectorStorage directorStorage;
 
     public Film findFilm(Long id) {
@@ -76,6 +82,16 @@ public class FilmService {
         filmStorage.findFilm(filmId);
         userStorage.findUser(userId);
         likeStorage.setLikeToMovie(filmId, userId);
+
+        Event event = new Event();
+        event.setUserId(userId);
+        event.setEventType("LIKE");
+        event.setOperation("ADD");
+        event.setEntityId(filmId);
+        event.setTimestamp(Instant.now().toEpochMilli());
+
+        eventService.addEvent(event);
+
         return filmStorage.findFilm(filmId);
     }
 
@@ -83,6 +99,17 @@ public class FilmService {
         filmStorage.findFilm(filmId);
         userStorage.findUser(userId);
         likeStorage.removeLikeFromMovie(userId, filmId);
+        likeStorage.removeLikeFromMovie(filmId, userId);
+
+        Event event = new Event();
+        event.setUserId(userId);
+        event.setEventType("LIKE");
+        event.setOperation("REMOVE");
+        event.setEntityId(filmId);
+        event.setTimestamp(Instant.now().toEpochMilli());
+
+        eventService.addEvent(event);
+
         return filmStorage.findFilm(filmId);
     }
 

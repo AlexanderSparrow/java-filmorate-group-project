@@ -7,7 +7,9 @@ import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.model.Event;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,6 +20,7 @@ public class UserService {
 
     private final UserStorage userStorage;
     private final FriendshipStorage friendshipStorage;
+    private final EventService eventService;
 
     public User findUser(long id) {
         return userStorage.findUser(id);
@@ -51,6 +54,16 @@ public class UserService {
             throw new ValidationExceptions("Нельзя добавить себя в друзья");
         }
         friendshipStorage.addFriend(id, friendId);
+
+        Event event = new Event();
+        event.setUserId(id);
+        event.setEventType("FRIEND");
+        event.setOperation("ADD");
+        event.setEntityId(friendId);
+        event.setTimestamp(Instant.now().toEpochMilli());
+
+        eventService.addEvent(event);
+
         return userStorage.findUser(id);
     }
 
@@ -62,6 +75,16 @@ public class UserService {
         userStorage.findUser(id);
         userStorage.findUser(friendId);
         friendshipStorage.removeFriend(id, friendId);
+
+        Event event = new Event();
+        event.setUserId(id);
+        event.setEventType("FRIEND");
+        event.setOperation("REMOVE");
+        event.setEntityId(friendId);
+        event.setTimestamp(Instant.now().toEpochMilli());
+
+        eventService.addEvent(event);
+
         return userStorage.findUser(id);
     }
 
