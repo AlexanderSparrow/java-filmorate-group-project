@@ -98,7 +98,6 @@ public class FilmService {
     public Film removeLikeFromMovie(long filmId, long userId) {
         filmStorage.findFilm(filmId);
         userStorage.findUser(userId);
-        likeStorage.removeLikeFromMovie(userId, filmId);
         likeStorage.removeLikeFromMovie(filmId, userId);
 
         Event event = new Event();
