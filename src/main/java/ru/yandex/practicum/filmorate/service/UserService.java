@@ -61,9 +61,7 @@ public class UserService {
         event.setOperation("ADD");
         event.setEntityId(friendId);
         event.setTimestamp(Instant.now().toEpochMilli());
-
         eventService.addEvent(event);
-
         return userStorage.findUser(id);
     }
 

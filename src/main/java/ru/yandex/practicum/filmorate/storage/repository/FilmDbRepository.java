@@ -60,7 +60,9 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
             "JOIN MPA ON f.FILM_MPA = MPA.ID " +
             "LEFT JOIN FILM_DIRECTORS AS fd ON f.film_id = fd.film_id " +
             "LEFT JOIN DIRECTORS AS d ON fd.director_id = d.id " +
-            "WHERE LOWER(d.name) LIKE LOWER(?) OR LOWER(f.film_name) LIKE LOWER(?) ";
+            "WHERE LOWER(d.name) LIKE LOWER(?) OR LOWER(f.film_name) LIKE LOWER(?) " +
+            "GROUP BY f.film_id " +
+            "ORDER BY f.film_id desc ";
 
     private static final String CREATE_FILM = "INSERT INTO films " +
             "(film_name, film_description, film_release_date, film_duration, film_mpa) " +
@@ -171,22 +173,19 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
                 insert(INSERT_GENRES, film.getId(), genre.getId());
             }
         }
-
         if (film.getDirectors() != null && !film.getDirectors().isEmpty()) {
             for (Director director : film.getDirectors()) {
                 insert(INSERT_DIRECTOR, film.getId(), director.getId());
             }
         }
-
-        if (film.getDirectors() != null && !film.getDirectors().isEmpty()) {
-            log.debug("Deleting old directors for film {}", film.getId());
-            delete(DELETE_DIRECTOR, film.getId());
-            for (Director director : film.getDirectors()) {
-                log.debug("Inserting director {} for film {}", director.getId(), film.getId());
-                insert(INSERT_DIRECTOR, film.getId(), director.getId());
-            }
-        }
-
+//        if (film.getDirectors() != null && !film.getDirectors().isEmpty()) {
+//            log.debug("Deleting old directors for film {}", film.getId());
+//            delete(DELETE_DIRECTOR, film.getId());
+//            for (Director director : film.getDirectors()) {
+//                log.debug("Inserting director {} for film {}", director.getId(), film.getId());
+//                insert(INSERT_DIRECTOR, film.getId(), director.getId());
+//            }
+//        }
         return film;
     }
 

@@ -161,7 +161,6 @@ public class FilmService {
                 recommendedFilms.add(film);
             }
         }
-
         return recommendedFilms;
     }
 

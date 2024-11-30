@@ -5,9 +5,9 @@ import lombok.EqualsAndHashCode;
 
 
 @Data
-@EqualsAndHashCode(of = { "id" })
+@EqualsAndHashCode(of = { "eventId" })
 public class Event {
-    private Long id;
+    private Long eventId;
     private Long userId;
     private String eventType;
     private String operation;
