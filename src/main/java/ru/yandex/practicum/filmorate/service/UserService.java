@@ -32,34 +32,12 @@ public class UserService {
 
     public User createUser(User user) {
         userValidation(user);
-
-        User user1 = userStorage.createUser(user);
-
-//        Event event = new Event();
-//        event.setUserId(user.getId());
-//        event.setEventType("FRIEND");
-//        event.setOperation("ADD");
-//        event.setEntityId(user1.getId());
-//        event.setTimeCreate(Instant.now().toEpochMilli());
-//
-//        eventService.addEvent(event);
-
-        return user1;
+        return userStorage.createUser(user);
     }
 
     public User updateUser(User user) {
         userValidation(user);
         userStorage.findUser(user.getId());
-
-//        Event event = new Event();
-//        event.setUserId(user.getId());
-//        event.setEventType("USER");
-//        event.setOperation("UPDATE");
-//        event.setEntityId(user.getId());
-//        event.setTimeCreate(Instant.now().toEpochMilli());
-//
-//        eventService.addEvent(event);
-
         return userStorage.updateUser(user);
     }
 
