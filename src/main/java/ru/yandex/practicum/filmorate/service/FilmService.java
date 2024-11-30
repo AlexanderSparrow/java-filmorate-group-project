@@ -46,32 +46,9 @@ public class FilmService {
     }
 
     public List<Film> searchFilms(String query, String... by) {
-        List<Film> films = findAllFilms();
-        List<String> str = List.of(by);
-        System.out.println(str);
-        if (str.size() == 2 && str.contains("title") && str.contains("director")) {
-            System.out.println(1);
-            films = films.stream()
-                    .filter(film -> StringUtils.containsIgnoreCase(film.getName(), (query)) ||
-                            StringUtils.containsIgnoreCase(film.getDirectors().stream()
-                                    .map(director -> director.getName())
-                                    .map(Object::toString)
-                                    .collect(Collectors.joining(", ")), query))
-                    .collect(Collectors.toList());
-        } else if (str.contains("title")) {
-            System.out.println(2);
-            films = films.stream()
-                    .filter(film -> StringUtils.containsIgnoreCase(film.getName(), (query)))
-                    .collect(Collectors.toList());
-        } else if (str.contains("director")) {
-            System.out.println(3);
-            films = films.stream()
-                    .filter(film -> StringUtils.containsIgnoreCase(film.getDirectors().stream()
-                            .map(director -> director.getName())
-                            .map(Object::toString)
-                            .collect(Collectors.joining(", ")), query))
-                    .collect(Collectors.toList());
-        }
+        List<Film> films = filmStorage.searchFilms(query, by);
+        films.forEach(film -> film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId()))));
+        films.forEach(film -> film.setDirectors(directorStorage.getDirectorsForFilm(film.getId())));
         return films;
     }
 
