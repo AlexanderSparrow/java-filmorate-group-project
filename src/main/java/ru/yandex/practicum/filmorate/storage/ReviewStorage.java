@@ -7,7 +7,9 @@ import java.util.List;
 public interface ReviewStorage {
     Review getReview(long id);
 
-    List<Review> getReviews(long filmId, int count);
+    List<Review> getReviews();
+
+    List<Review> getReviews(Long filmId, int count);
 
     Review createReview(Review review);
 
@@ -23,7 +25,7 @@ public interface ReviewStorage {
 
     Review deleteLikeReview(long id, long userId);
 
-    boolean isReviewExists(long id, long userId);
+    boolean isReviewExists(long userId, long filmId);
 
     boolean isLikeOrDislikeExists(long id, long userId, boolean isLike);
 }

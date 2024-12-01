@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 public class Review {
     private Long reviewId;
     private String content;
+    @NotNull(message = "Не указан характер отзыва")
     private Boolean isPositive;
     @NotNull(message = "Не указан пользователь")
     private Long userId;

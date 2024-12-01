@@ -28,35 +28,43 @@ public class ReviewService {
         return reviewStorage.getReview(id);
     }
 
-    public List<Review> getReviews(long filmId, int count) {
-        return reviewStorage.getReviews(filmId, count);
+
+    public List<Review> getReviews(Long filmId, int count) {
+        if (filmId == null) {
+            return reviewStorage.getReviews();
+        } else {
+            return reviewStorage.getReviews(filmId, count);
+        }
     }
 
     public Review createReview(Review review) {
         validateReview(review);
-        Review obj = reviewStorage.createReview(review);
-        Event event = new Event();
-        event.setUserId(obj.getUserId());
-        event.setEventType("REVIEW");
-        event.setOperation("ADD");
-        event.setEntityId(obj.getReviewId());
-        event.setTimestamp(Instant.now().toEpochMilli());
+        if (!reviewStorage.isReviewExists(review.getUserId(), review.getFilmId())){
+            Review obj = reviewStorage.createReview(review);
+            Event event = new Event();
+            event.setUserId(obj.getUserId());
+            event.setEventType("REVIEW");
+            event.setOperation("ADD");
+            event.setEntityId(obj.getReviewId());
+            event.setTimestamp(Instant.now().toEpochMilli());
 
-        eventService.addEvent(event);
-        return obj;
+            eventService.addEvent(event);
+            return obj;
+        } else {
+            throw new ValidationExceptions("Отзыв уже опубликован");
+        }
     }
 
     public Review updateReview(Review review) {
         validateReview(review);
-        if (reviewStorage.isReviewExists(review.getFilmId(), review.getUserId())) {
-
-            Review obj = reviewStorage.updateReview(review);
+        if (reviewStorage.isReviewExists(review.getUserId(), review.getFilmId())) {
+            reviewStorage.updateReview(review);
 
             Event event = new Event();
-            event.setUserId(obj.getUserId());
+            event.setUserId(review.getUserId());
             event.setEventType("REVIEW");
             event.setOperation("UPDATE");
-            event.setEntityId(obj.getReviewId());
+            event.setEntityId(review.getReviewId());
             event.setTimestamp(Instant.now().toEpochMilli());
 
             eventService.addEvent(event);
@@ -68,7 +76,7 @@ public class ReviewService {
 
     public void deleteReview(long id) {
         Review review = getReview(id);
-        if (reviewStorage.isReviewExists(review.getFilmId(), review.getUserId())) {
+        if ((reviewStorage.isReviewExists(review.getFilmId(), review.getUserId()))) {
 
             Event event = new Event();
             event.setUserId(review.getUserId());
@@ -86,21 +94,23 @@ public class ReviewService {
     }
 
     public Review likeReview(long id, long userId) {
+        getReview(id);
         if (reviewStorage.isLikeOrDislikeExists(id, userId, false)) {
             deleteDislikeReview(id, userId);
         }
         if (!reviewStorage.isLikeOrDislikeExists(id, userId, true)) {
-                return reviewStorage.likeReview(id, userId);
+            return reviewStorage.likeReview(id, userId);
         } else {
             throw new ValidationExceptions("Вы уже поставили лайк");
         }
     }
 
     public Review dislikeReview(long id, long userId) {
+        getReview(id);
         if (reviewStorage.isLikeOrDislikeExists(id, userId, true)) {
             deleteLikeReview(id, userId);
         }
-        if (!reviewStorage.isLikeOrDislikeExists(id, userId,false)) {
+        if (!reviewStorage.isLikeOrDislikeExists(id, userId, false)) {
             return reviewStorage.dislikeReview(id, userId);
         } else {
             throw new ValidationExceptions("Вы уже поставили дизлайк этому ревью");
@@ -132,7 +142,7 @@ public class ReviewService {
         try {
             filmStorage.findFilm(review.getFilmId());
         } catch (NotFoundExceptions e) {
-             throw new NotFoundExceptions("Указан не верный Фильм");
+            throw new NotFoundExceptions("Указан не верный Фильм");
         }
 
     }

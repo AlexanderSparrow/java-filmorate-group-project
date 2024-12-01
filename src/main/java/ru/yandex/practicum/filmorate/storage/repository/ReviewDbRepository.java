@@ -14,37 +14,40 @@ import java.util.Optional;
 @Component
 @Repository
 public class ReviewDbRepository extends BaseRepository<Review> implements ReviewStorage {
-     private static final String FIND_BY_ID = "SELECT r.*, " +
-         "SUM(CASE WHEN rr.IS_LIKE = true THEN 1 WHEN rr.IS_LIKE = false THEN -1 END) AS useful " +
-         "FROM " +
-         "reviews r " +
-         "LEFT JOIN REVIEWS_REACTIONS rr ON r.ID = rr.review_ID " +
-         "WHERE r.id= ? " +
-         "GROUP BY r.ID, r.content, r.is_Positive, r.user_id, r.film_id";
-     private static final String FIND_BY_FILM_ID = "SELECT r.*, " +
-         "SUM(CASE WHEN rr.IS_LIKE = true THEN 1 WHEN rr.IS_LIKE = false THEN -1 END) AS useful " +
-         "FROM " +
-         "reviews r " +
-         "LEFT JOIN REVIEWS_REACTIONS rr ON r.ID = rr.review_ID " +
-         "WHERE r.film_id = ? " +
-         "GROUP BY r.ID, r.content, r.is_Positive, r.user_id, r.film_id " +
-         "LIMIT ?";
+    private static final String FIND_ALL = "SELECT r.*, " +
+            "SUM(CASE WHEN rr.IS_LIKE = true THEN 1 WHEN rr.IS_LIKE = false THEN -1 END) AS useful " +
+            "FROM " +
+            "reviews r " +
+            "LEFT JOIN REVIEWS_REACTIONS rr ON r.ID = rr.review_ID " +
+            "GROUP BY r.ID, r.content, r.is_Positive, r.user_id, r.film_id";
+    private static final String FIND_BY_ID = "SELECT r.*, " +
+            "SUM(CASE WHEN rr.IS_LIKE = true THEN 1 WHEN rr.IS_LIKE = false THEN -1 END) AS useful " +
+            "FROM " +
+            "reviews r " +
+            "LEFT JOIN REVIEWS_REACTIONS rr ON r.ID = rr.review_ID " +
+            "WHERE r.id= ? " +
+            "GROUP BY r.ID, r.content, r.is_Positive, r.user_id, r.film_id";
+    private static final String FIND_BY_FILM_ID = "SELECT r.*, " +
+            "SUM(CASE WHEN rr.IS_LIKE = true THEN 1 WHEN rr.IS_LIKE = false THEN -1 END) AS useful " +
+            "FROM " +
+            "reviews r " +
+            "LEFT JOIN REVIEWS_REACTIONS rr ON r.ID = rr.review_ID " +
+            "WHERE r.film_id = ? " +
+            "GROUP BY r.ID, r.content, r.is_Positive, r.user_id, r.film_id " +
+            "LIMIT ?";
     private static final String CREATE_REVIEW = "INSERT INTO REVIEWS\n" +
-         "(CONTENT, IS_POSITIVE, USER_ID, FILM_ID)\n" +
-         "VALUES(?, ?, ?, ?);";
-    private static final String UPDATE_REVIEW = "UPDATE REVIEWS\n" +
-         "SET CONTENT=?, IS_POSITIVE=?, USER_ID=?, FILM_ID=?\n" +
-         "WHERE ID=?";
-    private static final String DELETE_REVIEW = "DELETE FROM REVIEWS\n" +
-         "WHERE ID=?";
+            "(CONTENT, IS_POSITIVE, USER_ID, FILM_ID)\n" +
+            "VALUES(?, ?, ?, ?);";
+    private static final String UPDATE_REVIEW = "UPDATE REVIEWS SET CONTENT=?, IS_POSITIVE=? WHERE ID=?";
+    private static final String DELETE_REVIEW = "DELETE FROM REVIEWS WHERE ID=?";
     private static final String INSERT_REVIEW_REACTION_QUERY = "INSERT INTO REVIEWS_REACTIONS\n" +
-         "(REVIEW_ID, USER_ID, IS_LIKE)\n" +
-         "VALUES (?, ?, ?)";
+            "(REVIEW_ID, USER_ID, IS_LIKE)\n" +
+            "VALUES (?, ?, ?)";
     private static final String DELETE_REVIEW_REACTION_QUERY = "DELETE FROM REVIEWS_REACTIONS\n" +
-         "WHERE REVIEW_ID=? AND  USER_ID=? AND IS_LIKE=?";
+            "WHERE REVIEW_ID=? AND  USER_ID=? AND IS_LIKE=?";
     private static final String CHECK_LIKE_OR_DISLIKE_EXISTS = "SELECT COUNT(*) FROM reviews_reactions " +
-         "WHERE review_id=? and user_id=? and is_like = ?";
-    private static final String CHECK_REVIEW_EXISTS = "SELECT COUNT(*) FROM reviews WHERE film_id =? and user_id=?";
+            "WHERE review_id=? and user_id=? and is_like = ?";
+    private static final String CHECK_REVIEW_EXISTS = "SELECT COUNT(*) FROM reviews WHERE user_id =? and film_id=?";
 
     public ReviewDbRepository(JdbcTemplate jdbc, RowMapper<Review> mapper) {
         super(jdbc, mapper);
@@ -61,7 +64,12 @@ public class ReviewDbRepository extends BaseRepository<Review> implements Review
     }
 
     @Override
-    public List<Review> getReviews(long filmId, int count) {
+    public List<Review> getReviews() {
+        return findMany(FIND_ALL);
+    }
+
+    @Override
+    public List<Review> getReviews(Long filmId, int count) {
         return findMany(FIND_BY_FILM_ID, filmId, count);
     }
 
@@ -87,8 +95,6 @@ public class ReviewDbRepository extends BaseRepository<Review> implements Review
         update(UPDATE_REVIEW,
                 review.getContent(),
                 review.getIsPositive(),
-                review.getUserId(),
-                review.getFilmId(),
                 review.getReviewId()
         );
         return getReview(review.getReviewId());
@@ -96,7 +102,7 @@ public class ReviewDbRepository extends BaseRepository<Review> implements Review
 
     @Override
     public Review likeReview(long id, long userId) {
-        update(INSERT_REVIEW_REACTION_QUERY,  id, userId, true);
+        update(INSERT_REVIEW_REACTION_QUERY, id, userId, true);
         return getReview(id);
     }
 
@@ -108,7 +114,7 @@ public class ReviewDbRepository extends BaseRepository<Review> implements Review
 
     @Override
     public Review deleteDislikeReview(long id, long userId) {
-        delete(DELETE_REVIEW_REACTION_QUERY,  id, userId, false);
+        delete(DELETE_REVIEW_REACTION_QUERY, id, userId, false);
         return getReview(id);
     }
 
@@ -119,8 +125,8 @@ public class ReviewDbRepository extends BaseRepository<Review> implements Review
     }
 
     @Override
-    public boolean isReviewExists(long filmId, long userId) {
-        Integer count = jdbc.queryForObject(CHECK_REVIEW_EXISTS, Integer.class, filmId, userId);
+    public boolean isReviewExists(long userId, long filmId) {
+        Integer count = jdbc.queryForObject(CHECK_REVIEW_EXISTS, Integer.class, userId, filmId);
         return count != null && count > 0;
     }
 
@@ -129,5 +135,4 @@ public class ReviewDbRepository extends BaseRepository<Review> implements Review
         Integer count = jdbc.queryForObject(CHECK_LIKE_OR_DISLIKE_EXISTS, Integer.class, reviewId, userId, isLike);
         return count != null && count > 0;
     }
-
 }

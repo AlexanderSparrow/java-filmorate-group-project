@@ -6,9 +6,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedHashSet;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -29,6 +32,4 @@ public class FilmMapper implements RowMapper<Film> {
         film.setMpa(mpa);
         return film;
     }
-
-
 }

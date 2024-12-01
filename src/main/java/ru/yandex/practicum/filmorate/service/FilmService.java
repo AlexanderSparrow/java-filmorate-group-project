@@ -1,13 +1,11 @@
 package ru.yandex.practicum.filmorate.service;
 
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundExceptions;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
-import ru.yandex.practicum.filmorate.model.Event;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.*;
 
@@ -74,7 +72,8 @@ public class FilmService {
         film.setMpa(newFilm.getMpa());
         film.setGenres(newFilm.getGenres());
         film.setDirectors(newFilm.getDirectors());
-        return filmStorage.updateFilm(film);
+        filmStorage.updateFilm(film);
+        return findFilm(newFilm.getId());
     }
 
     public void deleteFilm(long id) {
@@ -85,23 +84,24 @@ public class FilmService {
     public Film setLikeToMovie(long filmId, long userId) {
         filmStorage.findFilm(filmId);
         userStorage.findUser(userId);
-        likeStorage.setLikeToMovie(filmId, userId);
+        if (!likeStorage.isLikeToFilmExists(filmId, userId)) {
+            likeStorage.setLikeToMovie(filmId, userId);
+            Event event = new Event();
+            event.setUserId(userId);
+            event.setEventType("LIKE");
+            event.setOperation("ADD");
+            event.setEntityId(filmId);
+            event.setTimestamp(Instant.now().toEpochMilli());
 
-        Event event = new Event();
-        event.setUserId(userId);
-        event.setEventType("LIKE");
-        event.setOperation("ADD");
-        event.setEntityId(filmId);
-        event.setTimestamp(Instant.now().toEpochMilli());
-
-        eventService.addEvent(event);
-
-        return filmStorage.findFilm(filmId);
+            eventService.addEvent(event);
+        }
+        return findFilm(filmId);
     }
 
     public Film removeLikeFromMovie(long filmId, long userId) {
         filmStorage.findFilm(filmId);
         userStorage.findUser(userId);
+        if (likeStorage.isLikeToFilmExists(filmId, userId)) {
         likeStorage.removeLikeFromMovie(filmId, userId);
 
         Event event = new Event();
@@ -112,13 +112,14 @@ public class FilmService {
         event.setTimestamp(Instant.now().toEpochMilli());
 
         eventService.addEvent(event);
-
-        return filmStorage.findFilm(filmId);
+        }
+        return findFilm(filmId);
     }
 
     public List<Film> getPopularFilms(int count, Long genreId, Integer year) {
         List<Film> films = filmStorage.getPopularFilms(count, genreId, year);
         films.forEach(film -> film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId()))));
+        films.forEach(film -> film.setDirectors(directorStorage.getDirectorsForFilm(film.getId())));
         return films;
     }
 
@@ -131,10 +132,13 @@ public class FilmService {
     }
 
     public List<Film> getFilmByDirector(long directorId, SortType sortType) {
-        return filmStorage.getFilmsByDirector(directorId, sortType)
-                .stream()
-                .peek(p -> p.setDirectors(directorStorage.getDirectorsForFilm(p.getId())))
-                .toList();
+        List<Film> list = filmStorage.getFilmsByDirector(directorId, sortType);
+        list.forEach(film -> film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId()))));
+        list.forEach(film -> film.setDirectors(directorStorage.getDirectorsForFilm(film.getId())));
+        if (list.isEmpty()) {
+            throw new NotFoundExceptions("Список фильмов не найден");
+        }
+        return list;
     }
 
     public List<Film> getCommonFilms(long userId, long friendId) {
@@ -161,6 +165,8 @@ public class FilmService {
             boolean shouldRecommended = favoriteMovies.stream().noneMatch(f -> f.getId().equals(film.getId()));
 
             if (shouldRecommended) {
+                film.setGenres(new LinkedHashSet<>(genreStorage.getGenresForFilm(film.getId())));
+                film.setDirectors(directorStorage.getDirectorsForFilm(film.getId()));
                 recommendedFilms.add(film);
             }
         }
