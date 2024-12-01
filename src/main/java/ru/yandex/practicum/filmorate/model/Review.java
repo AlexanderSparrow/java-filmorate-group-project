@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 @EqualsAndHashCode(of = { "reviewId" })
 public class Review {
     private Long reviewId;
+    @NotNull(message = "Не указан текст отзыва")
     private String content;
     @NotNull(message = "Не указан характер отзыва")
     private Boolean isPositive;

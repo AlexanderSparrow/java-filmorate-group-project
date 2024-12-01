@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -59,7 +60,8 @@ public class ReviewService {
 
     public Review updateReview(Review review) {
         validateReview(review);
-        if (reviewStorage.isReviewExists(review.getUserId(), review.getFilmId())) {
+        getReview(review.getReviewId());
+        //if (reviewStorage.isReviewExists(review.getUserId(), review.getFilmId())) {
 
             Event event = new Event();
             event.setUserId(review.getUserId());
@@ -70,9 +72,9 @@ public class ReviewService {
 
             eventService.addEvent(event);
             return reviewStorage.updateReview(review);
-        } else {
-            throw new ValidationExceptions("Нельзя обновить несуществующий отзыв");
-        }
+//        } else {
+//            throw new ValidationExceptions("Нельзя обновить несуществующий отзыв");
+//        }
     }
 
     public void deleteReview(long id) {
@@ -100,6 +102,14 @@ public class ReviewService {
             deleteDislikeReview(id, userId);
         }
         if (!reviewStorage.isLikeOrDislikeExists(id, userId, true)) {
+            Event event = new Event();
+            event.setUserId(userId);
+            event.setEventType("LIKE");
+            event.setOperation("ADD");
+            event.setEntityId(id);
+            event.setTimestamp(Instant.now().toEpochMilli());
+
+            eventService.addEvent(event);
             return reviewStorage.likeReview(id, userId);
         } else {
             throw new ValidationExceptions("Вы уже поставили лайк");
@@ -112,6 +122,14 @@ public class ReviewService {
             deleteLikeReview(id, userId);
         }
         if (!reviewStorage.isLikeOrDislikeExists(id, userId, false)) {
+            Event event = new Event();
+            event.setUserId(userId);
+            event.setEventType("LIKE");
+            event.setOperation("REMOVE");
+            event.setEntityId(id);
+            event.setTimestamp(Instant.now().toEpochMilli());
+
+            eventService.addEvent(event);
             return reviewStorage.dislikeReview(id, userId);
         } else {
             throw new ValidationExceptions("Вы уже поставили дизлайк этому ревью");

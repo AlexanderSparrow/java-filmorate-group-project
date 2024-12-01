@@ -19,7 +19,8 @@ public class ReviewDbRepository extends BaseRepository<Review> implements Review
             "FROM " +
             "reviews r " +
             "LEFT JOIN REVIEWS_REACTIONS rr ON r.ID = rr.review_ID " +
-            "GROUP BY r.ID, r.content, r.is_Positive, r.user_id, r.film_id";
+            "GROUP BY r.ID, r.content, r.is_Positive, r.user_id, r.film_id " +
+            "ORDER BY USEFUL DESC ";
     private static final String FIND_BY_ID = "SELECT r.*, " +
             "SUM(CASE WHEN rr.IS_LIKE = true THEN 1 WHEN rr.IS_LIKE = false THEN -1 END) AS useful " +
             "FROM " +
@@ -28,12 +29,13 @@ public class ReviewDbRepository extends BaseRepository<Review> implements Review
             "WHERE r.id= ? " +
             "GROUP BY r.ID, r.content, r.is_Positive, r.user_id, r.film_id";
     private static final String FIND_BY_FILM_ID = "SELECT r.*, " +
-            "SUM(CASE WHEN rr.IS_LIKE = true THEN 1 WHEN rr.IS_LIKE = false THEN -1 END) AS useful " +
+            "SUM(CASE WHEN rr.IS_LIKE = true THEN 1 WHEN rr.IS_LIKE = false THEN -1 END) AS USEFUL " +
             "FROM " +
             "reviews r " +
             "LEFT JOIN REVIEWS_REACTIONS rr ON r.ID = rr.review_ID " +
             "WHERE r.film_id = ? " +
             "GROUP BY r.ID, r.content, r.is_Positive, r.user_id, r.film_id " +
+            "ORDER BY USEFUL DESC " +
             "LIMIT ?";
     private static final String CREATE_REVIEW = "INSERT INTO REVIEWS\n" +
             "(CONTENT, IS_POSITIVE, USER_ID, FILM_ID)\n" +
