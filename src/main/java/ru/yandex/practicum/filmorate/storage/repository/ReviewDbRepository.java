@@ -82,6 +82,7 @@ public class ReviewDbRepository extends BaseRepository<Review> implements Review
                 review.getFilmId()
         );
         review.setReviewId(id);
+        System.out.println("Создано ревью с ID "   + review.getReviewId());
         return getReview(id);
     }
 

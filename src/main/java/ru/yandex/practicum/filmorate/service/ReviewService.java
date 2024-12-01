@@ -33,6 +33,7 @@ public class ReviewService {
         if (filmId == null) {
             return reviewStorage.getReviews();
         } else {
+            filmStorage.findFilm(filmId);
             return reviewStorage.getReviews(filmId, count);
         }
     }
@@ -40,16 +41,17 @@ public class ReviewService {
     public Review createReview(Review review) {
         validateReview(review);
         if (!reviewStorage.isReviewExists(review.getUserId(), review.getFilmId())){
-            Review obj = reviewStorage.createReview(review);
+            Review result = reviewStorage.createReview(review);
+
             Event event = new Event();
-            event.setUserId(obj.getUserId());
+            event.setUserId(result.getUserId());
             event.setEventType("REVIEW");
             event.setOperation("ADD");
-            event.setEntityId(obj.getReviewId());
+            event.setEntityId(result.getReviewId());
             event.setTimestamp(Instant.now().toEpochMilli());
 
             eventService.addEvent(event);
-            return obj;
+            return result;
         } else {
             throw new ValidationExceptions("Отзыв уже опубликован");
         }
@@ -58,7 +60,6 @@ public class ReviewService {
     public Review updateReview(Review review) {
         validateReview(review);
         if (reviewStorage.isReviewExists(review.getUserId(), review.getFilmId())) {
-            reviewStorage.updateReview(review);
 
             Event event = new Event();
             event.setUserId(review.getUserId());
