@@ -28,7 +28,6 @@ public class ReviewService {
         return reviewStorage.getReview(id);
     }
 
-
     public List<Review> getReviews(Long filmId, int count) {
         if (filmId == null) {
             return reviewStorage.getReviews();
@@ -60,18 +59,17 @@ public class ReviewService {
     public Review updateReview(Review review) {
         validateReview(review);
         getReview(review.getReviewId());
-       Review obj = getReview(review.getReviewId());
+        Review obj = getReview(review.getReviewId());
 
-            Event event = new Event();
-            event.setUserId(obj.getUserId());
-            event.setEventType("REVIEW");
-            event.setOperation("ADD");
-            event.setEntityId(obj.getReviewId());
-            event.setTimestamp(Instant.now().toEpochMilli());
+        Event event = new Event();
+        event.setUserId(obj.getUserId());
+        event.setEventType("REVIEW");
+        event.setOperation("ADD");
+        event.setEntityId(obj.getReviewId());
+        event.setTimestamp(Instant.now().toEpochMilli());
 
-            eventService.addEvent(event);
-            return reviewStorage.updateReview(review);
-
+        eventService.addEvent(event);
+        return reviewStorage.updateReview(review);
     }
 
     public void deleteReview(long id) {
@@ -84,7 +82,6 @@ public class ReviewService {
             event.setOperation("REMOVE");
             event.setEntityId(review.getReviewId());
             event.setTimestamp(Instant.now().toEpochMilli());
-
             eventService.addEvent(event);
 
             reviewStorage.deleteReview(id);
@@ -119,14 +116,6 @@ public class ReviewService {
             deleteLikeReview(id, userId);
         }
         if (!reviewStorage.isLikeOrDislikeExists(id, userId, false)) {
-            Event event = new Event();
-            event.setUserId(userId);
-            event.setEventType("LIKE");
-            event.setOperation("REMOVE");
-            event.setEntityId(id);
-            event.setTimestamp(Instant.now().toEpochMilli());
-
-            eventService.addEvent(event);
             return reviewStorage.dislikeReview(id, userId);
         } else {
             throw new ValidationExceptions("Вы уже поставили дизлайк этому ревью");
@@ -160,6 +149,5 @@ public class ReviewService {
         } catch (NotFoundExceptions e) {
             throw new NotFoundExceptions("Указан не верный Фильм");
         }
-
     }
 }
