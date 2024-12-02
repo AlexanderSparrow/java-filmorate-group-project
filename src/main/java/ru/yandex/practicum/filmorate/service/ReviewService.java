@@ -61,20 +61,18 @@ public class ReviewService {
     public Review updateReview(Review review) {
         validateReview(review);
         getReview(review.getReviewId());
-        //if (reviewStorage.isReviewExists(review.getUserId(), review.getFilmId())) {
+       Review obj = getReview(review.getReviewId(();
 
             Event event = new Event();
-            event.setUserId(review.getUserId());
+            event.setUserId(obj.getUserId());
             event.setEventType("REVIEW");
-            event.setOperation("UPDATE");
-            event.setEntityId(review.getReviewId());
+            event.setOperation("ADD");
+            event.setEntityId(obj.getReviewId());
             event.setTimestamp(Instant.now().toEpochMilli());
 
             eventService.addEvent(event);
             return reviewStorage.updateReview(review);
-//        } else {
-//            throw new ValidationExceptions("Нельзя обновить несуществующий отзыв");
-//        }
+
     }
 
     public void deleteReview(long id) {
