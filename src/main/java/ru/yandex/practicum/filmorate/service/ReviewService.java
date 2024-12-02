@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -41,7 +40,7 @@ public class ReviewService {
 
     public Review createReview(Review review) {
         validateReview(review);
-        if (!reviewStorage.isReviewExists(review.getUserId(), review.getFilmId())){
+        if (!reviewStorage.isReviewExists(review.getUserId(), review.getFilmId())) {
             Review result = reviewStorage.createReview(review);
 
             Event event = new Event();
