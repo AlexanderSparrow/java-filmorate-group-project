@@ -24,7 +24,7 @@ public class ReviewDbRepository extends BaseRepository<Review> implements Review
     "LEFT JOIN REVIEWS_REACTIONS rr " +
     "ON r.ID = rr.review_ID " +
     "GROUP BY r.ID " +
-    "ORDER BY useful DESC " ;
+    "ORDER BY useful DESC";
     private static final String FIND_BY_ID = "SELECT r.*, " +
             "SUM(CASE WHEN rr.IS_LIKE = true THEN 1 WHEN rr.IS_LIKE = false THEN -1 END) AS useful " +
             "FROM " +
