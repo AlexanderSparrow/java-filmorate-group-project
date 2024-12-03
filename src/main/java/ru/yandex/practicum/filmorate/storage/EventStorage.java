@@ -9,4 +9,7 @@ public interface EventStorage {
     Event addEvent(Event event); // Добавить новое событие
 
     List<Event> getEventsByUserId(Long userId); // Получить события по ID пользователя
+
+    void deleteEventsByUserId(Long userId);
+
 }

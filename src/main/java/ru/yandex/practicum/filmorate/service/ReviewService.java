@@ -64,7 +64,7 @@ public class ReviewService {
         Event event = new Event();
         event.setUserId(obj.getUserId());
         event.setEventType("REVIEW");
-        event.setOperation("ADD");
+        event.setOperation("UPDATE");
         event.setEntityId(obj.getReviewId());
         event.setTimestamp(Instant.now().toEpochMilli());
 
@@ -90,7 +90,7 @@ public class ReviewService {
         }
     }
 
-    public Review likeReview(long id, long userId) {
+    /*public Review likeReview(long id, long userId) {
         getReview(id);
         if (reviewStorage.isLikeOrDislikeExists(id, userId, false)) {
             deleteDislikeReview(id, userId);
@@ -108,7 +108,19 @@ public class ReviewService {
         } else {
             throw new ValidationExceptions("Вы уже поставили лайк");
         }
+    }*/
+    public Review likeReview(long id, long userId) {
+        getReview(id);
+        if (reviewStorage.isLikeOrDislikeExists(id, userId, false)) {
+            deleteDislikeReview(id, userId);
+        }
+        if (!reviewStorage.isLikeOrDislikeExists(id, userId, true)) {
+            return reviewStorage.likeReview(id, userId);
+        } else {
+            throw new ValidationExceptions("Вы уже поставили лайк");
+        }
     }
+
 
     public Review dislikeReview(long id, long userId) {
         getReview(id);

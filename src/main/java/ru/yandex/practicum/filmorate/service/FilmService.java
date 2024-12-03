@@ -83,26 +83,29 @@ public class FilmService {
     public Film setLikeToMovie(long filmId, long userId) {
         filmStorage.findFilm(filmId);
         userStorage.findUser(userId);
+        Event event = new Event();
+        event.setUserId(userId);
+        event.setEventType("LIKE");
+        event.setOperation("ADD");
+        event.setEntityId(filmId);
+        event.setTimestamp(Instant.now().toEpochMilli());
+
+        eventService.addEvent(event);
         if (!likeStorage.isLikeToFilmExists(filmId, userId)) {
             likeStorage.setLikeToMovie(filmId, userId);
-            Event event = new Event();
-            event.setUserId(userId);
-            event.setEventType("LIKE");
-            event.setOperation("ADD");
-            event.setEntityId(filmId);
-            event.setTimestamp(Instant.now().toEpochMilli());
 
-            eventService.addEvent(event);
         }
         return findFilm(filmId);
     }
+
 
     public Film removeLikeFromMovie(long filmId, long userId) {
         filmStorage.findFilm(filmId);
         userStorage.findUser(userId);
         if (likeStorage.isLikeToFilmExists(filmId, userId)) {
-        likeStorage.removeLikeFromMovie(filmId, userId);
+            likeStorage.removeLikeFromMovie(filmId, userId);
 
+        }
         Event event = new Event();
         event.setUserId(userId);
         event.setEventType("LIKE");
@@ -111,9 +114,10 @@ public class FilmService {
         event.setTimestamp(Instant.now().toEpochMilli());
 
         eventService.addEvent(event);
-        }
+
         return findFilm(filmId);
     }
+
 
     public List<Film> getPopularFilms(int count, Long genreId, Integer year) {
         List<Film> films = filmStorage.getPopularFilms(count, genreId, year);

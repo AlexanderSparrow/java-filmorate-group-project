@@ -9,8 +9,8 @@ import lombok.EqualsAndHashCode;
 public class Event {
     private Long eventId;
     private Long userId;
+    private Long entityId;
     private String eventType;
     private String operation;
-    private Long entityId;
     private Long timestamp;
 }
