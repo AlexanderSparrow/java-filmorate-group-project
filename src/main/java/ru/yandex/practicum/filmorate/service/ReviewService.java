@@ -58,13 +58,12 @@ public class ReviewService {
 
     public Review updateReview(Review review) {
         validateReview(review);
-        getReview(review.getReviewId());
         Review obj = getReview(review.getReviewId());
 
         Event event = new Event();
         event.setUserId(obj.getUserId());
         event.setEventType("REVIEW");
-        event.setOperation("ADD");
+        event.setOperation("UPDATE");
         event.setEntityId(obj.getReviewId());
         event.setTimestamp(Instant.now().toEpochMilli());
 
