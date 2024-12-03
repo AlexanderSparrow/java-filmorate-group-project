@@ -58,7 +58,6 @@ public class ReviewService {
 
     public Review updateReview(Review review) {
         validateReview(review);
-        getReview(review.getReviewId());
         Review obj = getReview(review.getReviewId());
 
         Event event = new Event();
