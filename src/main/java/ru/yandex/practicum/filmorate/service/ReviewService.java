@@ -63,7 +63,7 @@ public class ReviewService {
         Event event = new Event();
         event.setUserId(obj.getUserId());
         event.setEventType("REVIEW");
-        event.setOperation("UPDATE");
+        event.setOperation("ADD");
         event.setEntityId(obj.getReviewId());
         event.setTimestamp(Instant.now().toEpochMilli());
 
