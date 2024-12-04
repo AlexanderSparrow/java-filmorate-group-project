@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import ru.yandex.practicum.filmorate.model.enums.EventTypes;
+import ru.yandex.practicum.filmorate.model.enums.OperationTypes;
 
 
 @Data
@@ -10,7 +12,7 @@ public class Event {
     private Long eventId;
     private Long userId;
     private Long entityId;
-    private String eventType;
-    private String operation;
+    private EventTypes eventType;
+    private OperationTypes operation;
     private Long timestamp;
 }

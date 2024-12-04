@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.enums.EventTypes;
+import ru.yandex.practicum.filmorate.model.enums.OperationTypes;
 import ru.yandex.practicum.filmorate.storage.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.model.Event;
@@ -57,8 +59,8 @@ public class UserService {
 
         Event event = new Event();
         event.setUserId(id);
-        event.setEventType("FRIEND");
-        event.setOperation("ADD");
+        event.setEventType(EventTypes.FRIEND);
+        event.setOperation(OperationTypes.ADD);
         event.setEntityId(friendId);
         event.setTimestamp(Instant.now().toEpochMilli());
         eventService.addEvent(event);
@@ -76,8 +78,8 @@ public class UserService {
 
         Event event = new Event();
         event.setUserId(id);
-        event.setEventType("FRIEND");
-        event.setOperation("REMOVE");
+        event.setEventType(EventTypes.FRIEND);
+        event.setOperation(OperationTypes.REMOVE);
         event.setEntityId(friendId);
         event.setTimestamp(Instant.now().toEpochMilli());
 

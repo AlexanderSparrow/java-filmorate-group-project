@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundExceptions;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.model.enums.EventTypes;
+import ru.yandex.practicum.filmorate.model.enums.OperationTypes;
 import ru.yandex.practicum.filmorate.storage.*;
 
 import java.time.Instant;
@@ -84,8 +86,8 @@ public class FilmService {
         userStorage.findUser(userId);
         Event event = new Event();
         event.setUserId(userId);
-        event.setEventType("LIKE");
-        event.setOperation("ADD");
+        event.setEventType(EventTypes.LIKE);
+        event.setOperation(OperationTypes.ADD);
         event.setEntityId(filmId);
         event.setTimestamp(Instant.now().toEpochMilli());
 
@@ -107,8 +109,8 @@ public class FilmService {
         }
         Event event = new Event();
         event.setUserId(userId);
-        event.setEventType("LIKE");
-        event.setOperation("REMOVE");
+        event.setEventType(EventTypes.LIKE);
+        event.setOperation(OperationTypes.REMOVE);
         event.setEntityId(filmId);
         event.setTimestamp(Instant.now().toEpochMilli());
 

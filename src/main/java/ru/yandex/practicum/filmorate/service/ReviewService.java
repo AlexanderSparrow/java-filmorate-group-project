@@ -7,6 +7,8 @@ import ru.yandex.practicum.filmorate.exception.NotFoundExceptions;
 import ru.yandex.practicum.filmorate.exception.ValidationExceptions;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.model.enums.EventTypes;
+import ru.yandex.practicum.filmorate.model.enums.OperationTypes;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -44,8 +46,8 @@ public class ReviewService {
 
             Event event = new Event();
             event.setUserId(result.getUserId());
-            event.setEventType("REVIEW");
-            event.setOperation("ADD");
+            event.setEventType(EventTypes.REVIEW);
+            event.setOperation(OperationTypes.ADD);
             event.setEntityId(result.getReviewId());
             event.setTimestamp(Instant.now().toEpochMilli());
 
@@ -62,8 +64,8 @@ public class ReviewService {
 
         Event event = new Event();
         event.setUserId(obj.getUserId());
-        event.setEventType("REVIEW");
-        event.setOperation("UPDATE");
+        event.setEventType(EventTypes.REVIEW);
+        event.setOperation(OperationTypes.UPDATE);
         event.setEntityId(obj.getReviewId());
         event.setTimestamp(Instant.now().toEpochMilli());
 
@@ -77,8 +79,8 @@ public class ReviewService {
 
             Event event = new Event();
             event.setUserId(review.getUserId());
-            event.setEventType("REVIEW");
-            event.setOperation("REMOVE");
+            event.setEventType(EventTypes.REVIEW);
+            event.setOperation(OperationTypes.REMOVE);
             event.setEntityId(review.getReviewId());
             event.setTimestamp(Instant.now().toEpochMilli());
             eventService.addEvent(event);

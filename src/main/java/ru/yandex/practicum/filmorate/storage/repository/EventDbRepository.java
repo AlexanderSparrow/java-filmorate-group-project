@@ -28,8 +28,8 @@ public class EventDbRepository extends BaseRepository<Event> implements EventSto
         Long id = insert(CREATE_EVENT,
                 event.getUserId(),
                 event.getEntityId(),
-                event.getEventType(),
-                event.getOperation(),
+                event.getEventType().name(),
+                event.getOperation().name(),
                 event.getTimestamp()
         );
         event.setEventId(id);
