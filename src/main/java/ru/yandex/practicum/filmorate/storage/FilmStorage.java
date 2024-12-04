@@ -10,7 +10,7 @@ import java.util.List;
 @Service
 public interface FilmStorage {
 
-    public List<Film> searchFilms(String query, String... by);
+    List<Film> searchFilms(String query, String... by);
 
     Film findFilm(long id);
 
@@ -21,8 +21,6 @@ public interface FilmStorage {
     Film updateFilm(Film film);
 
     List<Film> getPopularFilms(int count, Long genreId, Integer year);
-
-    List<Film> getPopularFilms(int count);
 
     void deleteFilm(long id);
 

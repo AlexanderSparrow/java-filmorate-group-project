@@ -76,7 +76,6 @@ public class FilmService {
     }
 
     public void deleteFilm(long id) {
-        filmStorage.findFilm(id);
         filmStorage.deleteFilm(id);
     }
 
@@ -209,6 +208,12 @@ public class FilmService {
             if (!genreStorage.getAllGenres().contains(genre)) {
                 log.error("Пользователь попытался создать фильм с несуществующим жанром");
                 throw new ValidationExceptions("Необходимо указать корректный жанр");
+            }
+        }
+        for (Director director : newFilm.getDirectors()) {
+            if (!directorStorage.getAllDirectors().contains(director)) {
+                log.error("Пользователь попытался создать фильм с несуществующим режиссером");
+                throw new ValidationExceptions("Необходимо указать корректный режиссер");
             }
         }
     }

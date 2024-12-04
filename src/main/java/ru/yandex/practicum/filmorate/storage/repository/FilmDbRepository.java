@@ -136,7 +136,7 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
              "WHERE ul.user_id IN " +
                 "(SELECT ul2.user_id FROM USER_LIKES ul2 " +
                 "WHERE ul2.user_id <> ? AND ul2.film_id = ANY(?) " +
-                "GROUP BY ul2.user_id ORDER BY COUNT(*) DESC LIMIT 1)";
+                "GROUP BY ul2.user_id ORDER BY COUNT(*) DESC LIMIT 10)";
 
     public FilmDbRepository(JdbcTemplate jdbc, RowMapper<Film> mapper, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(jdbc, mapper);
@@ -214,17 +214,11 @@ public class FilmDbRepository extends BaseRepository<Film> implements FilmStorag
 
     @Override
     public List<Film> getPopularFilms(int count, Long genreId, Integer year) {
-        String sql = FIND_POPULAR_FILMS_WITH_FILTERS;
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("limit", count);
         parameters.addValue("genreId", genreId);
         parameters.addValue("year", year);
-        return namedParameterJdbcTemplate.query(sql, parameters, mapper);
-    }
-
-    @Override
-    public List<Film> getPopularFilms(int count) {
-        return findMany(FIND_POPULAR_FILMS, count);
+        return namedParameterJdbcTemplate.query(FIND_POPULAR_FILMS_WITH_FILTERS, parameters, mapper);
     }
 
     public void deleteFilm(long id) {

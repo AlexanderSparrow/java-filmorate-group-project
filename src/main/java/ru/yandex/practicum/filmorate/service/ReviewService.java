@@ -89,25 +89,6 @@ public class ReviewService {
         }
     }
 
-    /*public Review likeReview(long id, long userId) {
-        getReview(id);
-        if (reviewStorage.isLikeOrDislikeExists(id, userId, false)) {
-            deleteDislikeReview(id, userId);
-        }
-        if (!reviewStorage.isLikeOrDislikeExists(id, userId, true)) {
-            Event event = new Event();
-            event.setUserId(userId);
-            event.setEventType("LIKE");
-            event.setOperation("ADD");
-            event.setEntityId(id);
-            event.setTimestamp(Instant.now().toEpochMilli());
-
-            eventService.addEvent(event);
-            return reviewStorage.likeReview(id, userId);
-        } else {
-            throw new ValidationExceptions("Вы уже поставили лайк");
-        }
-    }*/
     public Review likeReview(long id, long userId) {
         getReview(id);
         if (reviewStorage.isLikeOrDislikeExists(id, userId, false)) {
@@ -119,7 +100,6 @@ public class ReviewService {
             throw new ValidationExceptions("Вы уже поставили лайк");
         }
     }
-
 
     public Review dislikeReview(long id, long userId) {
         getReview(id);

@@ -19,8 +19,6 @@ public class EventDbRepository extends BaseRepository<Event> implements EventSto
 
     private static final String FIND_ALL_EVENTS = "SELECT * FROM EVENTS WHERE USER_ID = ?";
 
-    private static final String DELETE_EVENTS_BY_USER = "DELETE FROM EVENTS WHERE USER_ID = ?";
-
     public EventDbRepository(JdbcTemplate jdbc, RowMapper<Event> mapper) {
         super(jdbc, mapper);
     }
@@ -42,10 +40,4 @@ public class EventDbRepository extends BaseRepository<Event> implements EventSto
     public List<Event> getEventsByUserId(Long userId) {
         return findMany(FIND_ALL_EVENTS, userId);
     }
-
-    @Override
-    public void deleteEventsByUserId(Long userId) {
-        jdbc.update(DELETE_EVENTS_BY_USER, userId);
-    }
 }
-
